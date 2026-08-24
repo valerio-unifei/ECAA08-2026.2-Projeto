@@ -1,51 +1,53 @@
 # Aula 04: Lógica Proposicional — Conectivos e Blocos de Permissivos
 
-## 1. Fundamentos Matemáticos: Conectivos Lógicos
+## 1. Fundamentos Matemáticos: Álgebra Proposicional e Operadores
 
-Na matemática discreta, uma **proposição** é uma sentença declarativa que assume um e apenas um valor-verdade: **Verdadeiro** ($1$) ou **Falso** ($0$).
+Na álgebra booleana de Boole-Shannon aplicada à automação de controle, definimos o corpo $\langle \mathbb{B}, \land, \lor, \neg, 0, 1 \rangle$ onde $\mathbb{B} = \{0, 1\}$.
 
-As operações sobre variáveis proposicionais são definidas por operadores lógicos fundamentais:
-1. **Negação ($\neg A$ ou $\bar{A}$):** Inverte o valor-verdade da proposição.
-2. **Conjunção ($A \land B$):** Verdadeira se e somente se ambos os operandos forem verdadeiros. Em automação, modela condições em **série** (intertravamento e permissivos conjuntos).
-3. **Disjunção ($A \lor B$):** Verdadeira se ao menos um dos operandos for verdadeiro. Em automação, modela redundâncias ou condições em **paralelo** (múltiplas causas de falha).
-4. **Disjunção Exclusiva ($A \oplus B$):** Verdadeira se exatamente um dos operandos for verdadeiro ($\neg(A \leftrightarrow B)$). Usada em seletores de modo operacional (Manual $\oplus$ Automático).
-5. **Implicação / Condicional ($A \rightarrow B$):** $\neg A \lor B$. Modela regras operacionais "SE condição $A$, ENTÃO ação $B$".
-6. **Bicondicional ($A \leftrightarrow B$):** $(A \rightarrow B) \land (B \rightarrow A)$. Modela equivalência de estados operacionais.
+Os operadores fundamentais e suas propriedades na engenharia são:
+1. **Negação ($\neg A$ / $\bar{A}$):** Inversão lógica (contatos NF / *Normally Closed*).
+2. **Conjunção ($A \land B$):** Associação em **série** (todos os requisitos devem ser satisfeitos simultaneamente).
+3. **Disjunção ($A \lor B$):** Associação em **paralelo** (múltiplas condições redundantes de disparo ou falha).
+4. **Disjunção Exclusiva ($A \oplus B$):** $(A \land \neg B) \lor (\neg A \land B)$. Seletor de exclusividade operacional mútuo (Modo Local $\oplus$ Modo Remoto).
+5. **Implicação Lógica ($A \rightarrow B \equiv \neg A \lor B$):** Condicional de controle "SE causa $A$, ENTÃO efeito $B$".
+6. **Bicondicional ($A \leftrightarrow B$):** Equivalência estrita de estados.
 
 ---
 
-## 2. Aplicação em Engenharia: Permissivos de Partida de Equipamentos Críticos
+## 2. Engenharia de Permissivos de Partida (*Start Permissives*) e Intertravamentos Contínuos (*Run Interlocks*)
 
-Em controle e automação, um **permissivo de partida** (*Start Permissive*) é uma condição booleana que deve ser estritamente satisfeita para que um atuador de potência (bomba, válvula, motor do reator) possa receber o comando de energização.
-
-### 2.1. Permissivo da Bomba de Ácido Fosfórico ($P_{\text{P-101}}$)
-A bomba centrífuga de ácido fosfórico $\text{P-101}$ alimenta o reator de neutralização. Seu acionamento ($cmd_{\text{P-101}}$) requer:
-- Nível de ácido no tanque pulmão adequado: $\neg l_{acid\_low}$
-- Válvula de sucção totalmente aberta: $ls_{suc\_open}$
-- Pressão de descarga normal (sem sobrepressão na linha): $\neg p_{discharge\_high}$
-- Sem botão de emergência ativo: $\neg e_1$
-- Modo operacional definido: $\text{Auto} \oplus \text{Manual}$
-
-$$P_{\text{P-101}} \equiv \neg l_{acid\_low} \land ls_{suc\_open} \land \neg p_{discharge\_high} \land \neg e_1 \land (\text{Auto} \oplus \text{Manual})$$
+Conforme a norma **IEC 61131-3** e a prática de projetos petroquímicos e de fertilizantes, a partida de atuadores de grande porte (bombas de pistão, reatores pressurizados, compressores de amônia) exige a separação clara entre:
+* **Permissivo de Partida ($P_{\text{start}}$):** Verificado no instante de emissão do pulso de comando de ligar.
+* **Intertravamento Contínuo ($I_{\text{run}}$):** Monitorado continuamente a cada ciclo de scan ($10\text{ ms} \dots 100\text{ ms}$). Qualquer violação causa o desligamento imediato (*Trip*).
 
 ```mermaid
-graph LR
-    L1["¬ l_acid_low (Nível OK)"] --> AND["Bloco AND (Conjunção)"]
-    L2["ls_suc_open (Sucção Aberta)"] --> AND
-    L3["¬ p_discharge_high (Pressão OK)"] --> AND
-    L4["¬ e_1 (Sem Emergência)"] --> AND
-    L5["Auto XOR Manual"] --> AND
-    AND --> Permissivo["Permissivo Bomba P-101 (True/False)"]
+graph TD
+    subgraph Condicoes["Condições de Segurança do Processo"]
+        C1["Nível Ácido Adequado (¬l_acid_low)"]
+        C2["Válvula Sucção Aberta (ls_suc_open)"]
+        C3["Sem Sobrepressão (¬p_discharge_high)"]
+        C4["Sem Emergência (¬e1)"]
+        C5["Modo Exclusivo (Auto XOR Manual)"]
+    end
+
+    C1 --> AND["Porta Lógica AND (Permissivo de Partida)"]
+    C2 --> AND
+    C3 --> AND
+    C4 --> AND
+    C5 --> AND
+    AND --> Q["Permissivo Habilitado (P_start = 1)"]
+    
+    Q --> Out["Liberação de Comando para o Contator da Bomba P-101"]
 ```
 
-### 2.2. Intertrava de Bloqueio Contínuo (*Run Interlock*)
-Mesmo após a partida, se qualquer condição crítica falhar, a operação é interrompida.
-$$\text{Trip}_{\text{P-101}} \equiv l_{acid\_low} \lor \neg ls_{suc\_open} \lor p_{discharge\_high} \lor e_1$$
-Pelas Leis de De Morgan:
-$$\text{Trip}_{\text{P-101}} \equiv \neg P_{\text{P-101\_base}}$$
+### 2.1. Permissivo da Bomba de Alimentação $\text{P-101}$ ($\text{H}_3\text{PO}_4$)
+$$P_{\text{start}} \equiv \neg l_{\text{acid\_low}} \land ls_{\text{suc\_open}} \land \neg p_{\text{discharge\_high}} \land \neg e_1 \land (\text{Auto} \oplus \text{Manual})$$
+
+### 2.2. Equação de Trip por De Morgan
+$$\text{Trip}_{\text{P-101}} \equiv \neg P_{\text{start}} \equiv l_{\text{acid\_low}} \lor \neg ls_{\text{suc\_open}} \lor p_{\text{discharge\_high}} \lor e_1 \lor \neg(\text{Auto} \oplus \text{Manual})$$
 
 ---
 
 ## 3. Entregável da Aula 04
 
-* **Algoritmo de Intertravamento Preliminar:** Implementação em Python dos blocos de permissivos e trips para a bomba $\text{P-101}$, reator $\text{R-101}$ e granulador $\text{M-201}$, avaliando o vetor de estados da planta.
+* **Módulo de Permissivos e Intertravamentos:** Implementação em Python dos blocos de lógica combinacional para $\text{P-101}$, $\text{R-101}$ e granulador $\text{M-201}$, incluindo simulação de transições de modo de operação.
