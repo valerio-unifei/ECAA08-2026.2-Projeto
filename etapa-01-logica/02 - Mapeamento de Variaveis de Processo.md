@@ -6,15 +6,13 @@ Na automação de processos industriais contínuos (conforme a norma **ISA-5.1**
 
 Para a aplicação de motores de inferência lógica e matrizes de intertravamento de segurança (*Safety Instrumented Systems - SIS* / IEC 61511), cada sinal contínuo $x(t) \in \mathbb{R}$ é mapeado formalmente em uma **proposição lógica atômica** $p \in \{0, 1\}$ através de funções características definidas por limites operacionais:
 
-$$\chi_{\text{High}}(x) = \begin{cases} 1 \text{ (Verdadeiro)}, & \text{se } x \ge L_{\text{critico\_high}} \\ 0 \text{ (Falso)}, & \text{se } x < L_{\text{critico\_high}} \end{cases}$$
+$$\chi_{\text{High}}(x) = \begin{cases} 1 \text{ (Verdadeiro)}, & \text{se } x \ge L_{\text{crit,high}} \\ 0 \text{ (Falso)}, & \text{se } x < L_{\text{crit,high}} \end{cases}$$
 
-$$\chi_{\text{Low}}(x) = \begin{cases} 1 \text{ (Verdadeiro)}, & \text{se } x \le L_{\text{critico\_low}} \\ 0 \text{ (Falso)}, & \text{se } x > L_{\text{critico\_low}} \end{cases}$$
+$$\chi_{\text{Low}}(x) = \begin{cases} 1 \text{ (Verdadeiro)}, & \text{se } x \le L_{\text{crit,low}} \\ 0 \text{ (Falso)}, & \text{se } x > L_{\text{crit,low}} \end{cases}$$
 
 ---
 
 ## 2. Catálogo Oficial de Tags e Proposições Lógicas da Planta de Fertilizantes
-
-![Industria de Fertilizante](/etapa-01-logica/Industria_fertilizantes.png)
 
 ### Setor 100: Reação de Neutralização ($\text{NH}_3 + \text{H}_3\text{PO}_4 \rightarrow \text{MAP/DAP}$)
 

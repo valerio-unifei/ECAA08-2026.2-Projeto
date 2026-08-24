@@ -41,10 +41,10 @@ graph TD
 ```
 
 ### 2.1. Permissivo da Bomba de Alimentação $\text{P-101}$ ($\text{H}_3\text{PO}_4$)
-$$P_{\text{start}} \equiv \neg l_{\text{acid\_low}} \land ls_{\text{suc\_open}} \land \neg p_{\text{discharge\_high}} \land \neg e_1 \land (\text{Auto} \oplus \text{Manual})$$
+$$P_{\text{start}} \equiv \neg l_{\text{acid,low}} \land ls_{\text{suc,open}} \land \neg p_{\text{disch,high}} \land \neg e_1 \land (\text{Auto} \oplus \text{Manual})$$
 
 ### 2.2. Equação de Trip por De Morgan
-$$\text{Trip}_{\text{P-101}} \equiv \neg P_{\text{start}} \equiv l_{\text{acid\_low}} \lor \neg ls_{\text{suc\_open}} \lor p_{\text{discharge\_high}} \lor e_1 \lor \neg(\text{Auto} \oplus \text{Manual})$$
+$$\text{Trip}_{\text{P-101}} \equiv \neg P_{\text{start}} \equiv l_{\text{acid,low}} \lor \neg ls_{\text{suc,open}} \lor p_{\text{disch,high}} \lor e_1 \lor \neg(\text{Auto} \oplus \text{Manual})$$
 
 ---
 
