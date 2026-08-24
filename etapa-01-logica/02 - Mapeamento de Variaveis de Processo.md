@@ -12,6 +12,14 @@ $$\chi_{\text{Low}}(x) = \begin{cases} 1 \text{ (Verdadeiro)}, & \text{se } x \l
 
 ---
 
+![Diagrama da planta de fertilizantes](/etapa-01-logica/Industria_fertilizantes.png)
+
+*Figura 1: Visão geral da planta de fertilizantes e dos setores instrumentados.*
+
+---
+
+
+
 ## 2. Catálogo Oficial de Tags e Proposições Lógicas da Planta de Fertilizantes
 
 ### Setor 100: Reação de Neutralização ($\text{NH}_3 + \text{H}_3\text{PO}_4 \rightarrow \text{MAP/DAP}$)
