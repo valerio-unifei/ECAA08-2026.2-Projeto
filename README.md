@@ -1,6 +1,10 @@
 # ECAA08-2026.2-Projeto
 Proposta e enunciado do projeto de ensino para a disciplina de ECAA08 Automática de 2026.2
 
+## Site do Projeto
+
+[SCADA-Core Automática](https://valerio-unifei.github.io/ECAA08-2026.2-Projeto/)
+
 # Proposta do Projeto
 
 O projeto **SCADA-Core Automática** tem como finalidade integrar os conceitos de matemática discreta aos sistemas de automação industrial, capacitando os estudantes a desenvolverem os motores algorítmicos internos de um software supervisório aplicado a processos críticos.
