@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Etapa 01: Lógica Formal & Sistemas Especialistas | SCADA-Core Automática</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- MathJax 3 for LaTeX equations -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+  <!-- Mermaid.js for diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-brand">
+        <span class="scada-badge">ETAPA 01</span>
+        <span>SCADA-Core Automática</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../index.html">🏠 Início</a></li>
+        <li><a href="#apresentacao">📽️ Apresentação (15 Slides)</a></li>
+        <li><a href="#simulador">🎛️ Simulador SCADA</a></li>
+        <li><a href="#aulas-detalhadas">📖 Aulas 01 a 10</a></li>
+        <li><a href="planta-quimica.html">🏭 Planta Modelo</a></li>
+        <li><a href="diretrizes-github.html">🐙 GitHub & 5W2H</a></li>
+      </ul>
+      <div class="nav-controls">
+        <button id="theme-toggle" class="theme-toggle-btn" title="Alternar Modo Escuro/Claro">☀️</button>
+        <button id="mobile-menu-btn" class="mobile-menu-btn">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="hero-section">
+    <div class="hero-container">
+      <span class="hero-tagline">Engenharia de Controle & Automação • ECAA08 2026.2</span>
+      <h1 class="hero-title">Etapa 01: Lógica Formal & Sistemas Especialistas</h1>
+      <p class="hero-subtitle">
+        Documentação completa, apresentação interativa em 15 slides e simulador SCADA em tempo real para supervisão e intertravamento de segurança no Complexo Químico de Fertilizantes NPK.
+      </p>
+      
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <span>👨‍🏫 <strong>Docente:</strong> Controle & Automação</span>
+        </div>
+        <div class="hero-meta-item">
+          <span>📐 <strong>Fundamento:</strong> Lógica Proposicional, Predicados e Sistemas Especialistas</span>
+        </div>
+        <div class="hero-meta-item">
+          <span>🏭 <strong>Planta Modelo:</strong> Reator de Neutralização R-101 e Tancagem</span>
+        </div>
+        <div class="hero-meta-item">
+          <span>⏱️ <strong>Escopo:</strong> Aulas 01 a 10 (Módulo 1)</span>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a href="#apresentacao" class="btn btn-primary">Ver Apresentação (15 Slides)</a>
+        <a href="#simulador" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981, #06b6d4);">Abrir Simulador SCADA</a>
+        <a href="#aulas-detalhadas" class="btn btn-outline">Consultar Aulas 01 a 10</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-container">
+
+    <!-- CALLOUT NOTA DO PROFESSOR -->
+    <div class="callout callout-info">
+      <div class="callout-title">👨‍🏫 Apresentação da Disciplina: Por que Lógica Formal na Automação?</div>
+      <p>
+        "Prezados estudantes de Engenharia de Controle e Automação: no controle de processos de alta periculosidade — como a síntese de fertilizantes com amônia líquida ($\text{NH}_3$) e ácidos concentrados —, a segurança funcional não pode depender de tentativa e erro. A <strong>Lógica Formal</strong> e os <strong>Sistemas Especialistas</strong> fornecem as ferramentas matemáticas exatas para provar, por meio de tautologias e regras de inferência dedutiva (*Modus Ponens/Tollens*), que o sistema de controle <strong>jamais permitirá uma condição de explosão ou vazamento tóxico</strong>. Abaixo, vocês encontram a apresentação estruturada em 15 slides, o simulador em tempo real e o memorial de todas as 10 aulas da Etapa 01."
+      </p>
+    </div>
+
+    <!-- ===================================================
+         1. APRESENTAÇÃO COM 15 SLIDES
+         =================================================== -->
+    <section id="apresentacao" style="margin-top: 3.5rem;">
+      <div class="section-header">
+        <span class="section-tag">Material Didático</span>
+        <h2 class="section-title">Apresentação da Etapa 01 (15 Slides)</h2>
+        <p class="section-subtitle">Navegue pelos slides abaixo usando os botões ou as setas do teclado (← e →) para estudar os fundamentos matemáticos e suas aplicações na engenharia.</p>
+      </div>
+
+      <div class="presentation-wrapper">
+        <div class="presentation-toolbar">
+          <div class="pres-info">
+            <span>📽️ <strong>SCADA-Core: Módulo 1</strong></span>
+            <span id="pres-slide-counter">Slide 1 de 15</span>
+          </div>
+          <div class="pres-controls">
+            <button id="pres-prev-btn" class="pres-btn" disabled>← Anterior</button>
+            <button id="pres-next-btn" class="pres-btn">Próximo →</button>
+          </div>
+        </div>
+
+        <div class="presentation-viewport">
+
+          <!-- SLIDE 1 -->
+          <div class="slide active">
+            <span class="slide-number-badge">Slide 01 / 15 • Abertura</span>
+            <h3 class="slide-title">SCADA-Core: Matemática Discreta Aplicada à Automação</h3>
+            <p class="slide-subtitle">Módulo 1: Lógica Formal, Intertravamentos SIS e Sistemas Especialistas (Aulas 01 a 10)</p>
+            <div class="slide-body">
+              <div class="grid-2">
+                <div>
+                  <p><strong>Objetivo Central:</strong> Projetar e validar matematicamente os motores internos de supervisão, intertravamento e diagnóstico de falhas para plantas químicas contínuas de alta complexidade.</p>
+                  <ul style="padding-left: 1.25rem; margin-top: 0.75rem; color: var(--text-muted);">
+                    <li><strong>Pilares Matemáticos:</strong> Álgebra Booleana, Provas Formais, Lógica de Predicados ($\forall, \exists$) e Cláusulas de Horn.</li>
+                    <li><strong>Normas Industriais:</strong> IEC 61508 / IEC 61511 (Segurança Funcional), ISA-5.1 e IEC 61131-3.</li>
+                  </ul>
+                </div>
+                <div class="card" style="text-align: center; background: rgba(37, 99, 235, 0.05);">
+                  <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">⚡ 🛡️ ⚗️</div>
+                  <h4 style="color: var(--primary-light);">Segurança Provada por Tautologia</h4>
+                  <p style="font-size: 0.85rem; color: var(--text-muted);">Garantia algorítmica de impossibilidade física e lógica de estados catastróficos.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 2 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 02 / 15 • Contextualização</span>
+            <h3 class="slide-title">A Planta Química Modelo: Complexo NPK</h3>
+            <p class="slide-subtitle">Reações exotérmicas, fluidos perigosos e topologia de processo</p>
+            <div class="slide-body">
+              <p>O estudo de caso abrange a síntese de fertilizantes minerais através da neutralização de <strong>Amônia Anidra Líquida ($\text{NH}_3$)</strong> com <strong>Ácido Fosfórico concentrado ($\text{H}_3\text{PO}_4$)</strong> no Reator R-101:</p>
+              $$\text{NH}_3\text{ (liq)} + \text{H}_3\text{PO}_4\text{ (aq)} \longrightarrow \text{NH}_4\text{H}_2\text{PO}_4\text{ (MAP, slurry)} \quad (\Delta H^\circ = -135\text{ kJ/mol})$$
+              <div class="grid-3" style="margin-top: 1rem;">
+                <div class="card" style="padding: 1rem;">
+                  <strong style="color: #ef4444;">Risco de Sobrepressão:</strong> Reação exotérmica descontrolada (*Runaway*) pode romper vasos e tubulações.
+                </div>
+                <div class="card" style="padding: 1rem;">
+                  <strong style="color: #f59e0b;">Fuga Tóxica ($\text{NH}_3$):</strong> Gás amônia com IDLH de $300\text{ ppm}$ exige alarme e corte imediato a $25\text{ ppm}$.
+                </div>
+                <div class="card" style="padding: 1rem;">
+                  <strong style="color: #10b981;">Cavitação Mecânica:</strong> Nível insuficiente no reator provoca destruição das bombas e agitador.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 3 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 03 / 15 • Aula 01</span>
+            <h3 class="slide-title">Aula 01: Arquitetura do SCADA-Core</h3>
+            <p class="slide-subtitle">Separação em camadas e integração da telemetria com a matemática discreta</p>
+            <div class="slide-body">
+              <p>Os sinais de campo transmitidos pelos instrumentos ISA-5.1 são capturados pelo CLP e processados pelo motor algorítmico do SCADA-Core estruturado em 4 módulos integrados:</p>
+              <div class="table-responsive" style="margin-top: 0.75rem;">
+                <table>
+                  <tr><th>Camada</th><th>Módulo Matemático</th><th>Função Operacional no SCADA</th></tr>
+                  <tr><td><strong>Camada 1</strong></td><td>Lógica Formal & Sistemas Especialistas</td><td>Intertravamento SIS, Prova de Tautologias e Diagnóstico Causa-Raiz.</td></tr>
+                  <tr><td><strong>Camada 2</strong></td><td>Teoria dos Grafos</td><td>Dígrafo da tubulação, Dijkstra para desvio de vazamentos e rota AGV.</td></tr>
+                  <tr><td><strong>Camada 3</strong></td><td>Teoria das Árvores</td><td>Busca BST $O(\log n)$, ISA-95 e Supressão de Alarmes ISA-18.2.</td></tr>
+                  <tr><td><strong>Camada 4</strong></td><td>Teoria das Relações</td><td>Matriz RBAC, Diagrama de Hasse e Sequenciador Grafcet/SFC.</td></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 4 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 04 / 15 • Aula 02</span>
+            <h3 class="slide-title">Aula 02: Discretização de Sinais e Tags ISA-5.1</h3>
+            <p class="slide-subtitle">Mapeamento de faixas 4-20mA em proposições booleanas com banda morta ($\delta$)</p>
+            <div class="slide-body">
+              <p>Cada grandeza física contínua $x(t)$ é convertida determinística em uma proposição atômica $p \in \{0, 1\}$ através de funções características com histerese para evitar o <em>chattering</em>:</p>
+              $$\chi_{\text{High}}(x) = \begin{cases} 1, & \text{se } x \ge L_{\text{crit}} \\ 0, & \text{se } x < L_{\text{crit}} - \delta \end{cases}$$
+              <div class="table-responsive" style="margin-top: 0.75rem;">
+                <table>
+                  <tr><th>Tag ISA-5.1</th><th>Variável Física</th><th>Faixa 4-20mA</th><th>Proposição</th><th>Condição Ativa ($=1$)</th></tr>
+                  <tr><td><code>PT-101</code></td><td>Pressão do Reator</td><td>$0 \dots 250\text{ bar}$</td><td>$p_1$</td><td>$P \ge 180\text{ bar}$ (Sobrepressão)</td></tr>
+                  <tr><td><code>TT-101</code></td><td>Temperatura Reator</td><td>$0 \dots 300^\circ\text{C}$</td><td>$t_1$</td><td>$T \ge 200^\circ\text{C}$ (Sobretemperatura)</td></tr>
+                  <tr><td><code>AT-101</code></td><td>Detector de Gás</td><td>$0 \dots 100\text{ ppm}$</td><td>$g_1$</td><td>$C_{\text{NH}_3} \ge 25\text{ ppm}$ (Vazamento)</td></tr>
+                  <tr><td><code>ESD-100</code></td><td>Botão Emergência</td><td>Digital NF</td><td>$e_1$</td><td>Circuito Aberto (Parada Manual)</td></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 5 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 05 / 15 • Aula 03</span>
+            <h3 class="slide-title">Aula 03: Prova Formal de Tautologias e Invariantes</h3>
+            <p class="slide-subtitle">Demonstração matemática rigorosa do Teorema da Não-Explosão</p>
+            <div class="slide-body">
+              <div class="callout callout-success">
+                <p><strong>Teorema:</strong> Sob a vigência do intertravamento de segurança ($p_1 \rightarrow \neg v_1$), o estado catastrófico de perigo ($S_{\text{perigo}} \equiv p_1 \land v_1$) é uma <strong>CONTRADIÇÃO ($\mathbf{F}$)</strong>.</p>
+              </div>
+              <p><strong>Demonstração por Equivalências Notáveis:</strong></p>
+              $$\Phi = (p_1 \land v_1) \land (p_1 \rightarrow \neg v_1) \equiv (p_1 \land v_1) \land (\neg p_1 \lor \neg v_1)$$
+              $$\Phi \equiv \big((p_1 \land \neg p_1) \land v_1\big) \lor \big(p_1 \land (v_1 \land \neg v_1)\big) \equiv (\mathbf{F} \land v_1) \lor (p_1 \land \mathbf{F}) \equiv \mathbf{F} \quad (\text{Q.E.D.})$$
+              <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Como $\Phi \equiv \mathbf{F}$, a garantia de segurança $\neg \Phi \equiv \mathbf{V}$ é uma <strong>TAUTOLOGIA INVARIANTE</strong>.</p>
+            </div>
+          </div>
+
+          <!-- SLIDE 6 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 06 / 15 • Aula 04</span>
+            <h3 class="slide-title">Aula 04: Permissivos de Partida vs. Intertravamento Contínuo</h3>
+            <p class="slide-subtitle">Engenharia de blocos lógicos combinacionais (IEC 61131-3)</p>
+            <div class="slide-body">
+              <div class="grid-2">
+                <div class="card">
+                  <h4 style="color: var(--primary-light);">Permissivo de Partida ($P_{\text{start}}$)</h4>
+                  <p style="font-size: 0.88rem; color: var(--text-muted);">Verificado no instante de envio do comando de ligar equipamento.</p>
+                  $$P_{\text{start}} \equiv \neg l_{\text{acid,low}} \land ls_{\text{suc,open}} \land \neg p_{\text{disch,high}} \land \neg e_1$$
+                </div>
+                <div class="card">
+                  <h4 style="color: #ef4444;">Intertravamento Contínuo ($I_{\text{run}}$)</h4>
+                  <p style="font-size: 0.88rem; color: var(--text-muted);">Avaliado continuamente a cada ciclo de scan ($10\text{ ms}$). Violação = Trip!</p>
+                  $$\text{Trip} \equiv \neg P_{\text{start}} \equiv l_{\text{acid,low}} \lor \neg ls_{\text{suc,open}} \lor p_{\text{disch,high}} \lor e_1$$
+                </div>
+              </div>
+              <p style="margin-top: 1rem; font-size: 0.9rem;">Pelas <strong>Leis de De Morgan</strong>, a negação de uma cadeia conjuntiva de permissivos converte-se em uma cadeia disjuntiva de condições de trip de emergência.</p>
+            </div>
+          </div>
+
+          <!-- SLIDE 7 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 07 / 15 • Aula 05</span>
+            <h3 class="slide-title">Aula 05: Formas Normais e Otimização Booleana</h3>
+            <p class="slide-subtitle">Forma Normal Disjuntiva (FND), Conjuntiva (FNC) e Tempo de Scan</p>
+            <div class="slide-body">
+              <p>Para garantir que o CLP execute a rotina de segurança em menos de $10\text{ ms}$ em plantas com milhares de variáveis, as expressões são minimizadas matematicamente:</p>
+              <ul style="padding-left: 1.25rem; margin: 0.75rem 0; color: var(--text-muted);">
+                <li><strong>FND (Soma de Produtos - SOP):</strong> Disjunção de mintermos onde a saída lógica é verdadeira ($1$).</li>
+                <li><strong>FNC (Produto de Somas - POS):</strong> Conjunção de maxtermos isolando todas as combinações de falha ($0$).</li>
+                <li><strong>Algoritmo de Quine-McCluskey:</strong> Elimina literais redundantes pela regra de adjacência $(A \land B) \lor (A \land \neg B) \equiv A$.</li>
+              </ul>
+              <div class="callout callout-info" style="font-size: 0.85rem; padding: 0.6rem 1rem;">
+                <strong>Resultado no SCADA:</strong> Redução de 60% nas instruções lógicas processadas por ciclo de varredura.
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 8 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 08 / 15 • Aula 06</span>
+            <h3 class="slide-title">Aula 06: Lógica de Predicados em Redes de Sensores</h3>
+            <p class="slide-subtitle">Quantificadores globais ($\forall$ e $\exists$) sobre conjuntos finitos de ativos</p>
+            <div class="slide-body">
+              <p>A Lógica de Primeira Ordem permite varreduras homogêneas em conjuntos industriais $\mathcal{S} = \{s_1, s_2, \dots, s_n\}$:</p>
+              <div class="grid-2" style="margin-top: 1rem;">
+                <div class="card">
+                  <h4 style="color: var(--primary-light);">Quantificador Universal ($\forall$)</h4>
+                  <p style="font-size: 0.88rem; color: var(--text-muted);">"Todos os sensores operando normalmente":</p>
+                  $$\forall s \in \mathcal{S}, \text{Saudavel}(s) \equiv \bigwedge_{i=1}^n \text{Saudavel}(s_i)$$
+                </div>
+                <div class="card">
+                  <h4 style="color: #ef4444;">Quantificador Existencial ($\exists$)</h4>
+                  <p style="font-size: 0.88rem; color: var(--text-muted);">"Existe ao menos um duto com vazamento":</p>
+                  $$\exists v \in \mathcal{V}, \text{Vazamento}(v) \equiv \bigvee_{j=1}^m \text{Vazamento}(v_j)$$
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 9 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 09 / 15 • Aula 07 (Parte 1)</span>
+            <h3 class="slide-title">Aula 07: Validade de Argumentos e Inferência Lógica</h3>
+            <p class="slide-subtitle">Regras dedutivas canônicas aplicadas à segurança de processos</p>
+            <div class="slide-body">
+              <p>Um argumento $P_1, P_2, \dots, P_k \models C$ é válido se for impossível premissas verdadeiras gerarem conclusão falsa:</p>
+              <div class="table-responsive" style="margin-top: 0.75rem;">
+                <table>
+                  <tr><th>Regra Canônica</th><th>Esquema Formal</th><th>Aplicação Prática no SCADA NPK</th></tr>
+                  <tr><td><strong>Modus Ponens (MP)</strong></td><td>$P \rightarrow Q, \; P \vdash Q$</td><td>$T > 200^\circ\text{C} \rightarrow \text{Trip}$. Mediu $215^\circ\text{C}$. $\therefore$ Acionar Trip.</td></tr>
+                  <tr><td><strong>Modus Tollens (MT)</strong></td><td>$P \rightarrow Q, \; \neg Q \vdash \neg P$</td><td>$\text{BombaLigada} \rightarrow \text{FluxoDetectado}$. Sem fluxo. $\therefore$ Bomba desarmou.</td></tr>
+                  <tr><td><strong>Silogismo Disjuntivo (SD)</strong></td><td>$P \lor Q, \; \neg P \vdash Q$</td><td>Alimentação por Bomba A ou Bomba B. Falha na A. $\therefore$ Ligar Bomba B.</td></tr>
+                  <tr><td><strong>Resolução Proposicional</strong></td><td>$P \lor Q, \; \neg P \lor R \vdash Q \lor R$</td><td>Fusão de cláusulas e eliminação de variáveis intermediárias.</td></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 10 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 10 / 15 • Aula 07 (Parte 2)</span>
+            <h3 class="slide-title">Aula 07: Prova por Refutação e Detecção de Falácias</h3>
+            <p class="slide-subtitle">Solucionadores SAT e prevenção de erros conceituais de automação</p>
+            <div class="slide-body">
+              <div class="grid-2">
+                <div>
+                  <h4 style="color: var(--primary-light);">Prova por Refutação (SAT Solver)</h4>
+                  <p style="font-size: 0.88rem; color: var(--text-muted);">
+                    Para provar que um intertravamento é infalível, injeta-se a negação da conclusão ($\neg C$) junto às premissas:
+                  </p>
+                  $$\{P_1, P_2, \dots, P_k, \neg C\} \models \mathbf{F} \quad (\text{Insatisfatível})$$
+                  <p style="font-size: 0.88rem;">A contradição obtida prova a validade incondicional do protocolo de segurança.</p>
+                </div>
+                <div class="card" style="background: rgba(239, 68, 68, 0.05); border-color: #ef4444;">
+                  <h4 style="color: #ef4444;">⚠️ Alerta de Falácias no CLP</h4>
+                  <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>Afirmação do Consequente:</strong> $P \rightarrow Q, Q \not\vdash P$. (Ex: Válvula de alívio aberta não implica necessariamente sobrepressão; pode ser falha da mola!).</p>
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;"><strong>Negação do Antecedente:</strong> $P \rightarrow Q, \neg P \not\vdash \neg Q$.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 11 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 11 / 15 • Aula 08 (Parte 1)</span>
+            <h3 class="slide-title">Aula 08: Sistemas Especialistas Baseados em Regras</h3>
+            <p class="slide-subtitle">Arquitetura formal $\langle \mathcal{F}, \mathcal{R}, \mathcal{E} \rangle$ e Cláusulas de Horn</p>
+            <div class="slide-body">
+              <p>O módulo de inteligência simbólica do SCADA-Core isola falhas em tempo real utilizando:</p>
+              <ul style="padding-left: 1.25rem; margin: 0.75rem 0; color: var(--text-muted);">
+                <li><strong>Base de Fatos ($\mathcal{F}$):</strong> Proposições ativas no instante $t$ vindas da telemetria dos sensores.</li>
+                <li><strong>Base de Conhecimento ($\mathcal{R}$):</strong> Regras em <strong>Cláusulas de Horn Definidas</strong>:
+                  $$R_i: \quad \text{SE } (A_{i,1} \land A_{i,2} \land \dots \land A_{i,k}) \quad \text{ENTÃO } \quad C_i$$
+                </li>
+                <li><strong>Estratégia de Resolução ($\mathcal{E}$):</strong> Arbitragem de conflitos priorizando segurança SIL (IEC 61508) sobre eficiência.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- SLIDE 12 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 12 / 15 • Aula 08 (Parte 2)</span>
+            <h3 class="slide-title">Aula 08: Catálogo de Falhas da Indústria de Fertilizantes</h3>
+            <p class="slide-subtitle">Matriz de diagnóstico especialista de causa-raiz</p>
+            <div class="slide-body">
+              <div class="table-responsive">
+                <table>
+                  <tr><th>Regra</th><th>Antecedentes Lógicos</th><th>Consequente / Diagnóstico</th><th>Ação do SCADA</th></tr>
+                  <tr><td><code>R-01</code></td><td><code>PT-101_HIGH</code> $\land$ <code>TT-101_HIGH</code></td><td><strong>Reação Runaway (Exotermia Crítica)</strong></td><td>Desarme total de reagentes</td></tr>
+                  <tr><td><code>R-02</code></td><td><code>REACAO_RUNAWAY</code> $\land$ <code>XV-101_OPEN</code></td><td><strong>Risco de Explosão por Amônia</strong></td><td>Forçar fechamento $\text{XV-101} < 1\text{ s}$</td></tr>
+                  <tr><td><code>R-03</code></td><td><code>LT-101_LOW</code> $\land$ <code>P-101_ON</code></td><td><strong>Cavitação Mecânica na Bomba P-101</strong></td><td>Desligar bomba imediatamente</td></tr>
+                  <tr><td><code>R-04</code></td><td><code>AT-101_HIGH</code> ($\ge 25\text{ ppm}$)</td><td><strong>Fuga Atmosférica de Amônia Tóxica</strong></td><td>Acionar cortina d'água & evacuação</td></tr>
+                  <tr><td><code>R-05</code></td><td><code>FS-201_LOW</code> $\land$ <code>TS-201_OFF</code></td><td><strong>Extinção de Chama no Secador 201</strong></td><td>Cortar gás natural e purgar</td></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 13 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 13 / 15 • Aula 09</span>
+            <h3 class="slide-title">Aula 09: Motores de Inferência (Forward & Backward)</h3>
+            <p class="slide-subtitle">Encadeamento Direto (Orientado a Dados) e Inverso (Orientado a Hipóteses)</p>
+            <div class="slide-body">
+              <div class="grid-2">
+                <div class="card" style="background: rgba(37, 99, 235, 0.05);">
+                  <h4 style="color: var(--primary-light);">Forward Chaining (Data-Driven)</h4>
+                  <p style="font-size: 0.88rem; color: var(--text-muted);">
+                    Parte dos fatos conhecidos dos sensores ($p_1=1, t_1=1$) e aplica <em>Modus Ponens</em> sucessivo para inferir novos estados até alcançar o ponto fixo de diagnóstico.
+                  </p>
+                  <p style="font-size: 0.85rem; font-weight: 600; color: var(--primary-light);">Uso: Diagnóstico em tempo real no COI.</p>
+                </div>
+                <div class="card" style="background: rgba(16, 185, 129, 0.05);">
+                  <h4 style="color: var(--accent-green);">Backward Chaining (Goal-Driven)</h4>
+                  <p style="font-size: 0.88rem; color: var(--text-muted);">
+                    Parte de uma hipótese de risco (ex: "Houve explosão iminente?") e busca recursivamente se os antecedentes necessários ocorreram no histórico.
+                  </p>
+                  <p style="font-size: 0.85rem; font-weight: 600; color: var(--accent-green);">Uso: Análise pericial pós-incidente.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 14 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 14 / 15 • Aula 10</span>
+            <h3 class="slide-title">Aula 10: Avaliação do Módulo 1 & Demonstração</h3>
+            <p class="slide-subtitle">Integração em malha fechada do motor de intertravamento e inferência</p>
+            <div class="slide-body">
+              <p>Na Aula 10, os alunos validam o código Python integrado operando sobre a simulação física do reator:</p>
+              <div class="grid-3" style="margin-top: 1rem;">
+                <div class="card" style="padding: 1rem; text-align: center;">
+                  <div style="font-size: 1.8rem; margin-bottom: 0.35rem;">📊</div>
+                  <strong>100% de Tautologias</strong>
+                  <p style="font-size: 0.8rem; color: var(--text-muted);">Nenhuma combinação perigosa autorizada pelo SIS.</p>
+                </div>
+                <div class="card" style="padding: 1rem; text-align: center;">
+                  <div style="font-size: 1.8rem; margin-bottom: 0.35rem;">⚡</div>
+                  <strong>Tempo $< 10\text{ ms}$</strong>
+                  <p style="font-size: 0.8rem; color: var(--text-muted);">Varredura de regras compatível com scan de CLP.</p>
+                </div>
+                <div class="card" style="padding: 1rem; text-align: center;">
+                  <div style="font-size: 1.8rem; margin-bottom: 0.35rem;">🔍</div>
+                  <strong>Causa-Raiz Isolada</strong>
+                  <p style="font-size: 0.8rem; color: var(--text-muted);">Relatório e POP automáticos para o operador.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 15 -->
+          <div class="slide">
+            <span class="slide-number-badge">Slide 15 / 15 • Conclusão</span>
+            <h3 class="slide-title">Conclusão da Etapa 01 & Próximos Passos</h3>
+            <p class="slide-subtitle">Da Lógica Formal à Teoria dos Grafos e Roteamento de Fluidos (Módulo 2)</p>
+            <div class="slide-body">
+              <p>Com a <strong>Etapa 01</strong> concluída com sucesso, a planta química possui uma camada de segurança formal determinística que previne acidentes e isola falhas.</p>
+              <div class="callout callout-info" style="margin-top: 1rem;">
+                <strong>Transição para o Módulo 2 (Grafos):</strong> Na próxima etapa, modelaremos a infraestrutura física de tubulações como um <strong>Dígrafo Ponderado $G=(V, E, W)$</strong>, aplicando o <strong>Algoritmo de Dijkstra</strong> para desviar automaticamente fluidos quando um trecho for bloqueado por vazamento!
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="presentation-footer">
+          <div class="slide-dots" id="slide-dots"></div>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Use as setas ← e → do teclado</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================
+         2. SIMULADOR SCADA EM JAVASCRIPT
+         =================================================== -->
+    <section id="simulador" style="margin-top: 4rem;">
+      <div class="section-header">
+        <span class="section-tag">Laboratório Virtual</span>
+        <h2 class="section-title">Simulador SCADA em Tempo Real</h2>
+        <p class="section-subtitle">Supervisório industrial interativo com os motores lógicos da Etapa 01 aplicados ao Reator R-101 e Tanques de Insumos.</p>
+      </div>
+
+      <div class="scada-sim-container">
+        
+        <div class="scada-header">
+          <div class="scada-title-box">
+            <div class="scada-live-indicator"></div>
+            <div>
+              <h3 style="font-size: 1.15rem; margin: 0; font-family: var(--font-mono); color: #ffffff;">SCADA-CORE: COMPLEXO NPK - SETOR 100 & 300</h3>
+              <small style="color: #94a3b8; font-family: var(--font-mono);">Motor Lógico Formal • Scan: 10ms • SIS IEC 61508 Ativo</small>
+            </div>
+          </div>
+          <div id="scada-sis-status">
+            <span style="color:#10b981; font-weight:bold;">🟢 PROCESSO EM REGIME NOMINAL</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <small style="color: #94a3b8; font-family: var(--font-mono); display: block; margin-bottom: 0.4rem;">INJEÇÃO RÁPIDA DE CENÁRIOS INDUSTRIAIS:</small>
+          <div class="preset-buttons">
+            <button id="preset-normal" class="preset-btn">🟢 Operação Nominal</button>
+            <button id="preset-runaway" class="preset-btn" style="border-color: #ef4444; color: #fca5a5;">🔴 Cenário 1: Reação Runaway</button>
+            <button id="preset-toxic" class="preset-btn" style="border-color: #f59e0b; color: #fcd34d;">☣️ Cenário 2: Fuga de Amônia</button>
+            <button id="preset-cavitation" class="preset-btn" style="border-color: #38bdf8; color: #bae6fd;">⚡ Cenário 3: Cavitação P-101</button>
+            <button id="preset-esd" class="preset-btn" style="border-color: #ec4899; color: #fbcfe8;">🛑 Cenário 4: Parada Manual ESD</button>
+          </div>
+        </div>
+
+        <div class="scada-grid">
+          
+          <!-- SINÓTICO VISUAL (P&ID SVG) -->
+          <div class="scada-synoptic">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <strong style="color: #38bdf8; font-family: var(--font-mono); font-size: 0.85rem;">SINÓTICO TOPOLÓGICO DE PROCESSO (P&ID)</strong>
+              <span id="syn-alarm-beacon" style="display: none; background: #ef4444; color: #ffffff; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold; animation: pulseLive 0.8s infinite;">🚨 ALARME ALM-101 ATIVO</span>
+            </div>
+
+            <div class="synoptic-svg-wrap">
+              <svg viewBox="0 0 500 280" style="width: 100%; height: 100%;">
+                <path id="syn-pipe-nh3" d="M 40 60 L 150 60 L 150 120 L 220 120" fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round"/>
+                <path id="syn-pipe-acid" d="M 40 220 L 150 220 L 150 150 L 220 150" fill="none" stroke="#fbbf24" stroke-width="6" stroke-linecap="round"/>
+                <path d="M 280 200 L 380 200 L 380 140 L 460 140" fill="none" stroke="#f97316" stroke-width="6" stroke-linecap="round"/>
+
+                <rect x="10" y="30" width="60" height="60" rx="6" fill="#0f2942" stroke="#38bdf8" stroke-width="2"/>
+                <text x="40" y="55" fill="#38bdf8" font-size="10" font-family="monospace" text-anchor="middle" font-weight="bold">TK-301</text>
+                <text x="40" y="70" fill="#94a3b8" font-size="8" font-family="monospace" text-anchor="middle">NH3 Líq</text>
+
+                <rect x="10" y="190" width="60" height="60" rx="6" fill="#0f2942" stroke="#fbbf24" stroke-width="2"/>
+                <text x="40" y="215" fill="#fbbf24" font-size="10" font-family="monospace" text-anchor="middle" font-weight="bold">TK-302</text>
+                <text x="40" y="230" fill="#94a3b8" font-size="8" font-family="monospace" text-anchor="middle">H3PO4</text>
+
+                <circle cx="150" cy="80" r="12" id="syn-xv101-state" fill="#10b981" stroke="#ffffff" stroke-width="1.5"/>
+                <text x="150" y="84" fill="#ffffff" font-size="8" font-family="monospace" text-anchor="middle" font-weight="bold">XV101</text>
+
+                <circle cx="150" cy="190" r="12" id="syn-xv102-state" fill="#10b981" stroke="#ffffff" stroke-width="1.5"/>
+                <text x="150" y="194" fill="#ffffff" font-size="8" font-family="monospace" text-anchor="middle" font-weight="bold">XV102</text>
+
+                <rect x="220" y="90" width="60" height="130" rx="15" fill="#0f1f38" stroke="#06b6d4" stroke-width="2.5"/>
+                <rect id="syn-reactor-liquid" x="222" y="150" width="56" height="68" rx="8" fill="#10b981" opacity="0.75"/>
+                
+                <line x1="250" y1="80" x2="250" y2="170" stroke="#94a3b8" stroke-width="3"/>
+                <g id="syn-agitator-blade">
+                  <ellipse cx="250" cy="170" rx="18" ry="4" fill="#e2e8f0"/>
+                </g>
+
+                <text x="250" y="115" fill="#ffffff" font-size="10" font-family="monospace" text-anchor="middle" font-weight="bold">R-101</text>
+                <text x="250" y="130" fill="#94a3b8" font-size="8" font-family="monospace" text-anchor="middle">Pre-Neutr</text>
+
+                <rect x="420" y="110" width="60" height="60" rx="6" fill="#0f2942" stroke="#f97316" stroke-width="2"/>
+                <text x="450" y="135" fill="#f97316" font-size="10" font-family="monospace" text-anchor="middle" font-weight="bold">GRAN-201</text>
+                <text x="450" y="150" fill="#94a3b8" font-size="8" font-family="monospace" text-anchor="middle">Granulação</text>
+
+                <ellipse id="syn-gas-cloud" cx="250" cy="65" rx="45" ry="20" fill="#a855f7" opacity="0.6" style="display: none; animation: pulseLive 1s infinite;"/>
+              </svg>
+            </div>
+
+            <div class="propositions-strip">
+              <div id="prop-p1" class="prop-badge">p1: 0</div>
+              <div id="prop-t1" class="prop-badge">t1: 0</div>
+              <div id="prop-g1" class="prop-badge">g1: 0</div>
+              <div id="prop-lhigh" class="prop-badge">l_high: 0</div>
+              <div id="prop-llow" class="prop-badge">l_low: 0</div>
+              <div id="prop-e1" class="prop-badge">e1: 0</div>
+              <div id="prop-v1" class="prop-badge">v1: 1</div>
+              <div id="prop-v2" class="prop-badge">v2: 1</div>
+              <div id="prop-m1" class="prop-badge">m1: 1</div>
+            </div>
+          </div>
+
+          <!-- CONTROLES DE TELEMETRIA -->
+          <div class="scada-controls-panel">
+            <strong style="color: #38bdf8; font-family: var(--font-mono); font-size: 0.85rem; display: block; margin-bottom: 1rem;">
+              TELEMETRIA ANALÓGICA (4-20mA) & ENTRADAS DIGITAIS
+            </strong>
+
+            <div class="control-row">
+              <div class="control-label">
+                <span>PT-101: Pressão Reator R-101 ($p_1$)</span>
+                <strong id="val-pt101">120.0 bar</strong>
+              </div>
+              <input type="range" id="sim-pt101" class="range-slider" min="0" max="250" step="1" value="120">
+              <small style="color: #64748b; font-size: 0.75rem;">Limiar Crítico: $\ge 180\text{ bar}$</small>
+            </div>
+
+            <div class="control-row">
+              <div class="control-label">
+                <span>TT-101: Temperatura Reator ($t_1$)</span>
+                <strong id="val-tt101">140.0 °C</strong>
+              </div>
+              <input type="range" id="sim-tt101" class="range-slider" min="0" max="300" step="1" value="140">
+              <small style="color: #64748b; font-size: 0.75rem;">Limiar Crítico: $\ge 200^\circ\text{C}$</small>
+            </div>
+
+            <div class="control-row">
+              <div class="control-label">
+                <span>AT-101: Concentração de $\text{NH}_3$ ($g_1$)</span>
+                <strong id="val-at101">2.5 ppm</strong>
+              </div>
+              <input type="range" id="sim-at101" class="range-slider" min="0" max="100" step="0.5" value="2.5">
+              <small style="color: #64748b; font-size: 0.75rem;">Limiar Crítico: $\ge 25.0\text{ ppm}$</small>
+            </div>
+
+            <div class="control-row">
+              <div class="control-label">
+                <span>LT-101: Nível do Reator R-101</span>
+                <strong id="val-lt101">65.0 %</strong>
+              </div>
+              <input type="range" id="sim-lt101" class="range-slider" min="0" max="100" step="1" value="65">
+              <small style="color: #64748b; font-size: 0.75rem;">Limites: $l_{\text{low}} \le 20\%$ | $l_{\text{high}} \ge 90\%$</small>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.25rem;">
+              <label class="sim-switch" style="font-size: 0.8rem;">
+                <input type="checkbox" id="sim-esd100">
+                <span><strong>ESD-100:</strong> Botão Emergência ($e_1$)</span>
+              </label>
+
+              <label class="sim-switch" style="font-size: 0.8rem;">
+                <input type="checkbox" id="sim-ag101" checked>
+                <span><strong>AG-101:</strong> Agitador Ligado ($m_1$)</span>
+              </label>
+
+              <label class="sim-switch" style="font-size: 0.8rem;">
+                <input type="checkbox" id="sim-p101" checked>
+                <span><strong>P-101:</strong> Bomba Ligada</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+          
+          <div class="card" style="background: #050a17; border-color: #1e3a5f;">
+            <h4 style="color: #38bdf8; font-size: 0.95rem; margin-bottom: 0.5rem;">📐 Avaliação Lógica & Prova de Invariante</h4>
+            <div id="scada-math-proof" style="font-size: 0.85rem; font-family: var(--font-mono); color: #cbd5e1; line-height: 1.6;">
+              Calculando prova formal...
+            </div>
+            <div id="scada-predicates-status" style="font-size: 0.82rem; font-family: var(--font-mono); margin-top: 0.75rem; border-top: 1px solid #1e293b; padding-top: 0.5rem;">
+              Varredura de predicados...
+            </div>
+          </div>
+
+          <div class="card" style="background: #050a17; border-color: #1e3a5f;">
+            <h4 style="color: #c084fc; font-size: 0.95rem; margin-bottom: 0.5rem;">🧠 Motor Especialista (Forward Chaining)</h4>
+            <div id="scada-inference-output" style="font-size: 0.85rem; line-height: 1.5;">
+              Aguardando varredura de regras...
+            </div>
+          </div>
+
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <small style="color: #94a3b8; font-family: var(--font-mono); display: block; margin-bottom: 0.35rem;">REGISTRO DE EVENTOS EM TEMPO REAL (SCADA HISTORIAN):</small>
+          <div class="scada-console" id="scada-console-log">
+            <div class="log-entry info">[SISTEMA] Inicializando SCADA-Core Automática...</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================
+         3. AULAS DETALHADAS 01 A 10
+         =================================================== -->
+    <section id="aulas-detalhadas" style="margin-top: 4.5rem;">
+      <div class="section-header">
+        <span class="section-tag">Ementa e Entregáveis</span>
+        <h2 class="section-title">Memorial Detalhado das Aulas 01 a 10</h2>
+        <p class="section-subtitle">Relação completa entre o conteúdo de matemática discreta e os códigos de entrega em Python/Jupyter.</p>
+      </div>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 8%;">Aula</th>
+              <th style="width: 24%;">Título da Aula</th>
+              <th style="width: 38%;">Fundamentos Matemáticos & Aplicação SCADA</th>
+              <th style="width: 30%;">Arquivo de Entrega Obrigatório</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Aula 01</strong></td>
+              <td>Kick-off & Arquitetura do SCADA-Core</td>
+              <td>Estruturação orientada a objetos da classe <code>TagSCADA</code>, conversão contínuo-discreta e separação em 4 módulos.</td>
+              <td><code>etapa-01-logica/01 - Kick-off e Arquitetura do SCADA.ipynb</code></td>
+            </tr>
+            <tr>
+              <td><strong>Aula 02</strong></td>
+              <td>Mapeamento de Variáveis para Proposições</td>
+              <td>Discretização com histerese ($\delta$) de sinais $4\text{ a }20\text{ mA}$ (PT-101, TT-101, AT-101, LT-101).</td>
+              <td><code>etapa-01-logica/02 - Mapeamento de Variaveis de Processo.ipynb</code></td>
+            </tr>
+            <tr>
+              <td><strong>Aula 03</strong></td>
+              <td>Tautologias, Contradições e Intertravamento</td>
+              <td>Demonstração formal do Teorema de Não-Explosão: $\Phi = S_{\text{perigo}} \land (p_1 \rightarrow \neg v_1) \equiv \mathbf{F}$.</td>
+              <td><code>etapa-01-logica/03 - Tautologias e Contradicoes.ipynb</code></td>
+            </tr>
+            <tr>
+              <td><strong>Aula 04</strong></td>
+              <td>Lógica Proposicional: Conectivos & Permissivos</td>
+              <td>Permissivo de Partida ($P_{\text{start}}$) vs. Intertravamento Contínuo ($I_{\text{run}}$) e aplicação das Leis de De Morgan.</td>
+              <td><code>etapa-01-logica/04 - Logica Proposicional Conectivos e Permissivos.ipynb</code></td>
+            </tr>
+            <tr>
+              <td><strong>Aula 05</strong></td>
+              <td>Formas Normais (FNC / FND) e Otimização</td>
+              <td>Minimização de termos booleanos para redução de ciclo de scan determinístico no CLP ($10\text{ ms}$).</td>
+              <td><code>etapa-01-logica/05 - Formas Normais e Otimizacao Booleana.ipynb</code></td>
+            </tr>
+            <tr>
+              <td><strong>Aula 06</strong></td>
+              <td>Quantificadores e Predicados em Sensores</td>
+              <td>Lógica de Primeira Ordem ($\forall s \in \text{Sensores}, \text{Normal}(s)$ e $\exists v \in \text{Linhas}, \text{Vazamento}(v)$).</td>
+              <td><code>etapa-01-logica/06 - Quantificadores e Predicados em Redes de Sensores.ipynb</code></td>
+            </tr>
+            <tr>
+              <td><strong>Aula 07</strong></td>
+              <td>Validade e Inferência Lógica na Segurança</td>
+              <td>Regras canônicas (*Modus Ponens*, *Modus Tollens*, Resolução) e prova por refutação (*SAT Solvers*).</td>
+              <td><code>etapa-01-logica/07 - Validade e Inferencia Logica na Seguranca.ipynb</code></td>
+            </tr>
+            <tr>
+              <td><strong>Aula 08</strong></td>
+              <td>Base de Conhecimento e Regras de Diagnóstico</td>
+              <td>Cláusulas de Horn para 6 falhas críticas industriais (Runaway, Cavitação de Bomba, Fuga de Amônia).</td>
+              <td><code>etapa-01-logica/08 - Base de Conhecimento e Regras de Diagnostico.ipynb</code></td>
+            </tr>
+            <tr>
+              <td><strong>Aula 09</strong></td>
+              <td>Motor de Inferência Forward & Backward</td>
+              <td>Algoritmo de encadeamento direto (*Data-Driven*) para diagnóstico em tempo real e inverso para auditoria.</td>
+              <td><code>etapa-01-logica/09 - Motor de Inferencia Forward e Backward Chaining.ipynb</code></td>
+            </tr>
+            <tr>
+              <td><strong>Aula 10</strong></td>
+              <td><strong>Avaliação do Módulo 1</strong></td>
+              <td>Defesa prática do Motor Integrado de Intertravamento e Diagnóstico de Falhas operando a planta.</td>
+              <td><code>etapa-01-logica/10 - Avaliacao Modulo 1 Motor de Intertravamento e Diagnostico.ipynb</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-bottom">
+      <p>© 2026.2 ECAA08 Automática • Engenharia de Controle e Automação • UNIFEI. Publicado no GitHub Pages.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+</body>
+</html>

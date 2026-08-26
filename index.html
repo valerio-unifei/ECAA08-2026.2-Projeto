@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCADA-Core Automática | ECAA08 2026.2 - Matemática Discreta Aplicada ao Controle</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="doc/css/styles.css">
+  
+  <!-- MathJax 3 -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <span class="scada-badge">SCADA-CORE</span>
+        <span>ECAA08 Automática</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">🏠 Início</a></li>
+        <li><a href="doc/etapa-01-logica.html">⚡ Etapa 01 (Disponível)</a></li>
+        <li><a href="doc/planta-quimica.html">🏭 Planta Modelo</a></li>
+        <li><a href="doc/diretrizes-github.html">🐙 GitHub & 5W2H</a></li>
+      </ul>
+      <div class="nav-controls">
+        <button id="theme-toggle" class="theme-toggle-btn" title="Alternar Modo Escuro/Claro">☀️</button>
+        <button id="mobile-menu-btn" class="mobile-menu-btn">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="hero-section">
+    <div class="hero-container">
+      <span class="hero-tagline">Engenharia de Controle & Automação • UNIFEI</span>
+      <h1 class="hero-title">SCADA-Core Automática</h1>
+      <p class="hero-subtitle">
+        Integração rigorosa de <strong>Matemática Discreta</strong> (Lógica Formal, Grafos, Árvores e Relações) aos motores algorítmicos de supervisão e controle em plantas industriais químicas de missão crítica.
+      </p>
+      
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <span>📘 <strong>Disciplina:</strong> ECAA08 Automática (2026.2)</span>
+        </div>
+        <div class="hero-meta-item">
+          <span>🎯 <strong>Metodologia:</strong> Problem-Based Learning (PBL)</span>
+        </div>
+        <div class="hero-meta-item">
+          <span>🏭 <strong>Estudo de Caso:</strong> Complexo Industrial NPK</span>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a href="doc/etapa-01-logica.html" class="btn btn-primary" style="font-size: 1rem; padding: 0.85rem 1.8rem;">
+          ⚡ Acessar Etapa 01: Lógica Formal (Disponível) →
+        </a>
+        <a href="doc/planta-quimica.html" class="btn btn-outline">
+          🏭 Conhecer Planta Química NPK
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-container">
+
+    <!-- NOTA DO PROFESSOR -->
+    <div class="callout callout-info" style="margin-bottom: 3.5rem;">
+      <div class="callout-title">👨‍🏫 Mensagem do Docente de Controle e Automação</div>
+      <p>
+        "Bem-vindos ao portal do projeto <strong>SCADA-Core Automática</strong>. A documentação completa da <strong>Etapa 01: Lógica Formal & Sistemas Especialistas</strong> já está totalmente disponível, contendo a apresentação executiva em 15 slides, o memorial detalhado das Aulas 01 a 10 e o simulador SCADA interativo com injeção de falhas em tempo real. As demais etapas (Grafos, Árvores e Relações) estão em fase final de preparação e serão liberadas sequencialmente ao longo do cronograma semestral."
+      </p>
+    </div>
+
+    <!-- SEÇÃO DOS MÓDULOS / ETAPAS -->
+    <section style="margin-bottom: 4rem;">
+      <div class="section-header">
+        <span class="section-tag">Roteiro de Desenvolvimento</span>
+        <h2 class="section-title">Status das Etapas do Projeto</h2>
+        <p class="section-subtitle">Acompanhe a disponibilidade dos módulos do motor algorítmico do SCADA-Core.</p>
+      </div>
+
+      <div class="grid-2">
+        
+        <!-- CARD ETAPA 01: DISPONÍVEL -->
+        <div class="card" style="border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);">
+          <div class="card-header">
+            <span class="module-badge badge-mod1">Módulo 1 • Aulas 01 a 10</span>
+            <span style="background: #10b981; color: #ffffff; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; font-family: var(--font-mono);">✅ DISPONÍVEL AGORA</span>
+          </div>
+          <h3 class="card-title" style="color: #60a5fa;">⚡ Etapa 01: Lógica Formal & Sistemas Especialistas</h3>
+          <p class="card-description">
+            Discretização de sinais 4-20mA, prova de tautologia do Teorema da Não-Explosão ($\Phi \equiv \mathbf{F}$), quantificadores em redes de sensores, regras de inferência dedutiva e motor especialista *Forward Chaining*.
+          </p>
+          <ul style="padding-left: 1.25rem; font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            <li>📽️ <strong>Apresentação:</strong> 15 slides interativos com fórmulas e diagramas.</li>
+            <li>🎛️ <strong>Simulador:</strong> SCADA em JavaScript com P&ID animado e injeção de falhas.</li>
+            <li>📖 <strong>Aulas 01 a 10:</strong> Memorial de conceitos, ISA-5.1 e entregáveis em Python.</li>
+          </ul>
+          <div class="card-footer">
+            <a href="doc/etapa-01-logica.html" class="btn btn-primary" style="width: 100%; justify-content: center;">
+              Acessar Documentação da Etapa 01 →
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD ETAPA 02: EM BREVE -->
+        <div class="card" style="opacity: 0.85;">
+          <div class="card-header">
+            <span class="module-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">Módulo 2 • Aulas 11 a 18</span>
+            <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; font-family: var(--font-mono);">⏳ EM BREVE</span>
+          </div>
+          <h3 class="card-title">🕸️ Etapa 02: Teoria dos Grafos & Roteamento Fluídico</h3>
+          <p class="card-description">
+            Modelagem da infraestrutura de tubulações como dígrafo ponderado $G=(V, E, W)$, matrizes de adjacência/incidência, menor caminho com **Algoritmo de Dijkstra** para desvio autônomo de vazamentos e roteamento de AGVs por circuitos Eulerianos e TSP.
+          </p>
+          <div class="callout callout-warning" style="margin: 0.75rem 0; padding: 0.6rem 0.9rem; font-size: 0.82rem;">
+            <strong>Previsão de Liberação:</strong> Aulas 11 a 18 conforme cronograma semestral.
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-outline" style="width: 100%; justify-content: center; opacity: 0.6; cursor: not-allowed;" disabled>
+              Disponível em Breve
+            </button>
+          </div>
+        </div>
+
+        <!-- CARD ETAPA 03: EM BREVE -->
+        <div class="card" style="opacity: 0.85;">
+          <div class="card-header">
+            <span class="module-badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">Módulo 3 • Aulas 19 a 28</span>
+            <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; font-family: var(--font-mono);">⏳ EM BREVE</span>
+          </div>
+          <h3 class="card-title">🌲 Etapa 03: Árvores & Gestão de Alarmes (ISA-18.2)</h3>
+          <p class="card-description">
+            Hierarquia de ativos industriais ISA-95, Árvores Binárias de Busca (BST) $O(\log n)$ para varredura de *Tags*, algoritmo de supressão inteligente de inundação de alarmes (*Alarm Flood*) e árvores de decisão para parada de emergência (*Emergency Shutdown* - ESD).
+          </p>
+          <div class="callout callout-warning" style="margin: 0.75rem 0; padding: 0.6rem 0.9rem; font-size: 0.82rem;">
+            <strong>Previsão de Liberação:</strong> Aulas 19 a 28 conforme cronograma semestral.
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-outline" style="width: 100%; justify-content: center; opacity: 0.6; cursor: not-allowed;" disabled>
+              Disponível em Breve
+            </button>
+          </div>
+        </div>
+
+        <!-- CARD ETAPA 04: EM BREVE -->
+        <div class="card" style="opacity: 0.85;">
+          <div class="card-header">
+            <span class="module-badge" style="background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3);">Módulo 4 • Aulas 29 a 32</span>
+            <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; font-family: var(--font-mono);">⏳ EM BREVE</span>
+          </div>
+          <h3 class="card-title">🔄 Etapa 04: Relações, Permissões RBAC & Grafcet</h3>
+          <p class="card-description">
+            Matrizes booleanas de permissões, conjuntos parcialmente ordenados (POSETs com Diagramas de Hasse), relações de equivalência e sequenciamento de bateladas NPK em Grafcet/SFC (IEC 61131-3), culminando na Defesa Final Integrada.
+          </p>
+          <div class="callout callout-warning" style="margin: 0.75rem 0; padding: 0.6rem 0.9rem; font-size: 0.82rem;">
+            <strong>Previsão de Liberação:</strong> Aulas 29 a 32 na reta final do semestre.
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-outline" style="width: 100%; justify-content: center; opacity: 0.6; cursor: not-allowed;" disabled>
+              Disponível em Breve
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- METODOLOGIA GITHUB & 5W2H -->
+    <section style="margin-bottom: 2rem;">
+      <div class="card" style="background: #091224; border-color: #1e3a5f;">
+        <div class="grid-2">
+          <div>
+            <h3 style="color: #38bdf8; margin-bottom: 0.5rem;">🐙 Avaliação e Governança no GitHub</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+              As entregas de código de cada etapa são auditadas individualmente através das métricas de contribuição do Git (<em>Contributors</em>, <em>Insights</em> e <em>Pull Requests</em>). É obrigatório que cada aluno realize seus próprios commits atômicos com mensagens padronizadas.
+            </p>
+            <a href="doc/diretrizes-github.html" class="btn btn-outline" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">
+              Ver Guia de Git & Matriz 5W2H →
+            </a>
+          </div>
+
+          <div>
+            <h3 style="color: #10b981; margin-bottom: 0.5rem;">🏭 Planta Química Modelo (NPK)</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+              Conheça o memorial descritivo, as equações termodinâmicas de reação de fertilizantes, a setorização da fábrica e o catálogo completo de instrumentos e variáveis ISA-5.1.
+            </p>
+            <a href="doc/planta-quimica.html" class="btn btn-outline" style="padding: 0.4rem 0.9rem; font-size: 0.85rem;">
+              Ver Memorial da Planta →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-bottom">
+      <p>© 2026.2 ECAA08 Automática • Engenharia de Controle e Automação • UNIFEI. Publicado no GitHub Pages.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="doc/js/main.js"></script>
+</body>
+</html>

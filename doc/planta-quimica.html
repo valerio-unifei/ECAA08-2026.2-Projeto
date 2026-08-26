@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planta Química Modelo | SCADA-Core Automática</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] } };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-brand">
+        <span class="scada-badge">PLANTA</span>
+        <span>Complexo NPK</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../index.html">🏠 Início</a></li>
+        <li><a href="etapa-01-logica.html">⚡ Etapa 01: Lógica</a></li>
+        <li><a href="planta-quimica.html" class="active">🏭 Planta Modelo</a></li>
+        <li><a href="diretrizes-github.html">🐙 GitHub & 5W2H</a></li>
+      </ul>
+      <div class="nav-controls">
+        <button id="theme-toggle" class="theme-toggle-btn" title="Alternar Modo Escuro/Claro">☀️</button>
+        <button id="mobile-menu-btn" class="mobile-menu-btn">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero-section" style="padding: 3rem 1.5rem 3.5rem;">
+    <div class="hero-container">
+      <span class="hero-tagline">Estudo de Caso Industrial • ECAA08</span>
+      <h1 class="hero-title" style="font-size: 2.3rem;">Complexo Industrial de Fertilizantes Químicos NPK</h1>
+      <p class="hero-subtitle">
+        Memorial descritivo da engenharia de processos, reações químicas exotérmicas, P&ID e catálogo determinístico de instrumentação e *Tags* ISA-5.1.
+      </p>
+    </div>
+  </header>
+
+  <main class="main-container">
+
+    <!-- 1. CONTEXTO -->
+    <section style="margin-bottom: 3.5rem;">
+      <div class="section-header" style="text-align: left;">
+        <span class="section-tag">Engenharia de Processos</span>
+        <h2 class="section-title" style="font-size: 1.8rem;">1. Contextualização e Relevância Crítica</h2>
+      </div>
+
+      <p style="margin-bottom: 1.25rem;">
+        A fabricação de fertilizantes minerais é um segmento industrial de alta criticidade operacional, combinando reações químicas fortemente exotérmicas de neutralização, transporte de gases liquefeitos tóxicos sob pressão ($\text{NH}_3$), manuseio de ácidos minerais concentrados ($\text{H}_2\text{SO}_4$, $\text{H}_3\text{PO}_4$) e processos térmicos de secagem rotativa a combustão contínua.
+      </p>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">⚠️ Riscos Operacionais e Requisitos de Segurança Funcional</div>
+        <p>
+          Qualquer desvio não mitigado nas taxas de alimentação de amônia e ácido fosfórico pode acarretar <strong>sobrepressão violenta no reator</strong>, risco de <strong>fuga em massa de gás amônia</strong> tóxico na atmosfera (IDLH: $300\text{ ppm}$) ou perda de controle térmico com polimerização incontrolável do <em>slurry</em>. Por essa razão, o sistema <strong>SCADA-Core</strong> implementa camadas de proteção SIS baseadas em rigor matemático formal.
+        </p>
+      </div>
+    </section>
+
+    <!-- 2. REAÇÕES QUÍMICAS -->
+    <section style="margin-bottom: 3.5rem;">
+      <div class="section-header" style="text-align: left;">
+        <span class="section-tag">Química Industrial</span>
+        <h2 class="section-title" style="font-size: 1.8rem;">2. Insumos e Termodinâmica de Reação</h2>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <h4 style="color: #3b82f6; margin-bottom: 0.5rem;">🔵 Fontes de Nitrogênio (N)</h4>
+          <ul style="padding-left: 1.2rem; font-size: 0.9rem; color: var(--text-muted);">
+            <li><strong>Gás Natural ($\text{CH}_4$):</strong> Reforma a vapor para síntese de Haber-Bosch.</li>
+            <li><strong>Amônia Anidra Líquida ($\text{NH}_3$):</strong> Pressurizada a $15\text{ bar}$ ou refrigerada a $-33^\circ\text{C}$.</li>
+            <li><strong>Ácido Nítrico ($\text{HNO}_3$):</strong> Base para nitrato de amônio ($\text{NH}_4\text{NO}_3$).</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h4 style="color: #10b981; margin-bottom: 0.5rem;">🟢 Fontes de Fósforo (P)</h4>
+          <ul style="padding-left: 1.2rem; font-size: 0.9rem; color: var(--text-muted);">
+            <li><strong>Rocha Fosfática:</strong> Fluorapatita bruta $\text{Ca}_{10}(\text{PO}_4)_6\text{F}_2$.</li>
+            <li><strong>Ácido Sulfúrico ($\text{H}_2\text{SO}_4$ - $98\%$):</strong> Reagente de digestão ácida da rocha.</li>
+            <li><strong>Ácido Fosfórico ($\text{H}_3\text{PO}_4$ - $54\% \text{ P}_2\text{O}_5$):</strong> Intermediário para síntese de MAP e DAP.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h4 style="color: #f59e0b; margin-bottom: 0.5rem;">🟠 Fontes de Potássio (K)</h4>
+          <ul style="padding-left: 1.2rem; font-size: 0.9rem; color: var(--text-muted);">
+            <li><strong>Cloreto de Potássio ($\text{KCl}$):</strong> Silvita sólida ($60\% \text{ K}_2\text{O}$).</li>
+            <li>Insumo sólido refinado dosado na granulação para balanceamento das fórmulas NPK.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 1.5rem;">
+        <h4 style="margin-bottom: 0.75rem;">Equações de Neutralização no Reator R-101:</h4>
+        <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">
+          1. <strong>Síntese de MAP (Fosfato Monoamônico):</strong>
+          $$\text{NH}_3\text{ (liq)} + \text{H}_3\text{PO}_4\text{ (aq)} \longrightarrow \text{NH}_4\text{H}_2\text{PO}_4\text{ (slurry)} \quad (\Delta H^\circ = -135\text{ kJ/mol})$$
+        </p>
+        <p style="font-size: 0.95rem;">
+          2. <strong>Síntese de DAP (Fosfato Diamônico):</strong>
+          $$2\,\text{NH}_3\text{ (liq)} + \text{H}_3\text{PO}_4\text{ (aq)} \longrightarrow (\text{NH}_4)_2\text{HPO}_4\text{ (slurry)} \quad (\Delta H^\circ = -228\text{ kJ/mol})$$
+        </p>
+      </div>
+    </section>
+
+    <!-- 3. TOPOLOGIA E SETORES -->
+    <section style="margin-bottom: 3.5rem;">
+      <div class="section-header" style="text-align: left;">
+        <span class="section-tag">Fluxograma de Engenharia</span>
+        <h2 class="section-title" style="font-size: 1.8rem;">3. Setorização Física e Fluxograma de Processo</h2>
+      </div>
+
+      <div class="card">
+        <pre class="mermaid" style="background: transparent; border: none; padding: 0; text-align: center;">
+graph LR
+    subgraph S300["Setor 300: Parque de Tancagem & Utilidades"]
+        TK301["TK-301: Amônia Líquida (NH3)"]
+        TK302["TK-302: Ácido Fosfórico (H3PO4)"]
+        TK303["TK-303: Tanque Pulmão Slurry"]
+    end
+
+    subgraph S100["Setor 100: Síntese e Neutralização"]
+        MAN101["MAN-101: Manifold de Entrada"]
+        P101["P-101: Bomba Alimentação A"]
+        P102["P-102: Bomba Standby B"]
+        R101["R-101: Reator Pre-Neutralizer"]
+    end
+
+    subgraph S200["Setor 200: Granulação & Secagem"]
+        GRAN201["GRAN-201: Tambor Granulador"]
+        SEC201["SEC-201: Secador Rotativo Térmico"]
+        PEN201["PEN-201: Peneira Classificadora"]
+    end
+
+    subgraph S400["Setor 400: Armazenamento & Logística"]
+        EXP401["EXP-401: Ensacamento Automatizado"]
+        AGV401["AGV-401: Robô Coletor de Amostras"]
+    end
+
+    TK301 -->|XV-301| MAN101
+    TK302 -->|XV-302| MAN101
+    MAN101 -->|XV-101A| P101
+    MAN101 -->|XV-101B| P102
+    P101 -->|XV-102A| R101
+    P102 -->|XV-102B| R101
+    R101 -->|XV-202| TK303
+    R101 -->|XV-201| GRAN201
+    TK303 -->|XV-203| GRAN201
+    GRAN201 --> SEC201
+    SEC201 --> PEN201
+    PEN201 --> EXP401
+        </pre>
+      </div>
+    </section>
+
+    <!-- 4. CATÁLOGO DE TAGS -->
+    <section style="margin-bottom: 3.5rem;">
+      <div class="section-header" style="text-align: left;">
+        <span class="section-tag">Norma ISA-5.1</span>
+        <h2 class="section-title" style="font-size: 1.8rem;">4. Catálogo Oficial de Tags do SCADA-Core</h2>
+      </div>
+
+      <h3 style="font-size: 1.2rem; margin-bottom: 0.75rem; color: var(--primary-light);">Setor 100: Síntese e Reator Pre-Neutralizer (R-101)</h3>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Tag ISA-5.1</th>
+              <th>Instrumento / Equipamento</th>
+              <th>Sinal / Faixa</th>
+              <th>Proposição</th>
+              <th>Setpoint / Condição</th>
+              <th>Estado Booleano (1 / 0)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>PT-101</code></td>
+              <td>Transmissor de Pressão do Reator</td>
+              <td>$4-20\text{ mA}$ ($0 \dots 250\text{ bar}$)</td>
+              <td>$p_1$</td>
+              <td>$P \ge 180\text{ bar}$</td>
+              <td>$1$: Sobrepressão Crítica / $0$: Normal</td>
+            </tr>
+            <tr>
+              <td><code>TT-101</code></td>
+              <td>Transmissor de Temperatura</td>
+              <td>$4-20\text{ mA}$ ($0 \dots 300^\circ\text{C}$)</td>
+              <td>$t_1$</td>
+              <td>$T \ge 200^\circ\text{C}$</td>
+              <td>$1$: Sobretemperatura / $0$: Normal</td>
+            </tr>
+            <tr>
+              <td><code>AT-101</code></td>
+              <td>Detector de Amônia Ambiente</td>
+              <td>$4-20\text{ mA}$ ($0 \dots 100\text{ ppm}$)</td>
+              <td>$g_1$</td>
+              <td>$C_{\text{NH}_3} \ge 25\text{ ppm}$</td>
+              <td>$1$: Vazamento Tóxico / $0$: Seguro</td>
+            </tr>
+            <tr>
+              <td><code>LT-101A</code></td>
+              <td>Transmissor de Nível Alto</td>
+              <td>$4-20\text{ mA}$ ($0 \dots 100\%$)</td>
+              <td>$l_{\text{high}}$</td>
+              <td>$\text{Nível} \ge 90\%$</td>
+              <td>$1$: Risco Transbordamento / $0$: Normal</td>
+            </tr>
+            <tr>
+              <td><code>LT-101B</code></td>
+              <td>Transmissor de Nível Baixo</td>
+              <td>$4-20\text{ mA}$ ($0 \dots 100\%$)</td>
+              <td>$l_{\text{low}}$</td>
+              <td>$\text{Nível} \le 20\%$</td>
+              <td>$1$: Risco Cavitação / $0$: Normal</td>
+            </tr>
+            <tr>
+              <td><code>ESD-100</code></td>
+              <td>Botão de Parada de Emergência</td>
+              <td>Contato Seco (NF)</td>
+              <td>$e_1$</td>
+              <td>Circuito Aberto</td>
+              <td>$1$: Emergência Acionada / $0$: Repouso</td>
+            </tr>
+            <tr>
+              <td><code>XV-101</code></td>
+              <td>Válvula de Bloqueio $\text{NH}_3$</td>
+              <td>Digital Solenoide</td>
+              <td>$v_1$</td>
+              <td>Comando Atuador</td>
+              <td>$1$: Aberta / $0$: Fechada (Fail-Safe)</td>
+            </tr>
+            <tr>
+              <td><code>XV-102</code></td>
+              <td>Válvula de Bloqueio $\text{H}_3\text{PO}_4$</td>
+              <td>Digital Solenoide</td>
+              <td>$v_2$</td>
+              <td>Comando Atuador</td>
+              <td>$1$: Aberta / $0$: Fechada (Fail-Safe)</td>
+            </tr>
+            <tr>
+              <td><code>AG-101</code></td>
+              <td>Motor do Agitador de Pás</td>
+              <td>Feedback de Contator</td>
+              <td>$m_1$</td>
+              <td>$I \ge I_{\text{nom}}$</td>
+              <td>$1$: Em Rotação / $0$: Parado</td>
+            </tr>
+            <tr>
+              <td><code>ALM-101</code></td>
+              <td>Alarme Audiovisual da Planta</td>
+              <td>Relé Digital</td>
+              <td>$a_1$</td>
+              <td>Disparo SIS</td>
+              <td>$1$: Ativado (Sirene) / $0$: Silenciado</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- NAVEGAÇÃO -->
+    <div style="display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+      <a href="../index.html" class="btn btn-outline">← Início</a>
+      <a href="etapa-01-logica.html" class="btn btn-primary">Acessar Etapa 01: Lógica Formal →</a>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-bottom">
+      <p>© 2026.2 ECAA08 Automática • Engenharia de Controle e Automação • UNIFEI</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

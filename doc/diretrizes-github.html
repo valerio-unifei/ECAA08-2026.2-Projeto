@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diretrizes GitHub & Gestão 5W2H | SCADA-Core Automática</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] } };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-brand">
+        <span class="scada-badge">GITHUB & 5W2H</span>
+        <span>SCADA-Core Automática</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../index.html">🏠 Início</a></li>
+        <li><a href="etapa-01-logica.html">⚡ Etapa 01: Lógica</a></li>
+        <li><a href="planta-quimica.html">🏭 Planta Modelo</a></li>
+        <li><a href="diretrizes-github.html" class="active">🐙 GitHub & 5W2H</a></li>
+      </ul>
+      <div class="nav-controls">
+        <button id="theme-toggle" class="theme-toggle-btn" title="Alternar Modo Escuro/Claro">☀️</button>
+        <button id="mobile-menu-btn" class="mobile-menu-btn">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero-section" style="padding: 3rem 1.5rem 3.5rem;">
+    <div class="hero-container">
+      <span class="hero-tagline">Governança & Práticas de Engenharia</span>
+      <h1 class="hero-title" style="font-size: 2.3rem;">Diretrizes de Entrega no GitHub e Gestão 5W2H</h1>
+      <p class="hero-subtitle">
+        Normas de versionamento, auditoria de métricas individuais de contribuição no Git e planejamento de projetos na metodologia PBL.
+      </p>
+    </div>
+  </header>
+
+  <main class="main-container">
+
+    <!-- 1. DIRETRIZES DE REPOSITÓRIO -->
+    <section style="margin-bottom: 3.5rem;">
+      <div class="section-header" style="text-align: left;">
+        <span class="section-tag">Normas de Repositório</span>
+        <h2 class="section-title" style="font-size: 1.8rem;">1. Estruturação do Repositório Unificado</h2>
+      </div>
+
+      <p style="margin-bottom: 1.25rem;">
+        Todas as entregas do <strong>SCADA-Core Automática</strong> são geridas e avaliadas exclusivamente através do GitHub. Cada grupo de trabalho deve manter um único repositório oficial com todos os membros adicionados como colaboradores e permissões concedidas ao docente desde a Aula 01.
+      </p>
+
+      <div class="card">
+        <h4 style="margin-bottom: 0.75rem; color: var(--primary-light);">Estrutura Obrigatória de Pastas do Projeto:</h4>
+        <pre><code>ECAA08-2026.2-Projeto/
+├── README.md               # Apresentação geral do projeto e equipe
+├── index.html              # Portal HTML para visualização no GitHub Pages
+├── doc/                    # Documentação técnica e manuais em HTML
+│   ├── css/styles.css      # Folhas de estilo da documentação
+│   ├── js/main.js          # Scripts e simulador SCADA interativo
+│   ├── etapa-01-logica.html# Manual da Etapa 01, 15 slides e simulador
+│   ├── planta-quimica.html # Memorial e P&ID da planta química
+│   └── diretrizes-github.html
+├── etapa-01-logica/        # Códigos do Módulo 1 (Intertravamento & Inferência)
+├── etapa-02-grafos/        # Códigos do Módulo 2 (Dijkstra, Matrizes & AGV)
+├── etapa-03-arvores/       # Códigos do Módulo 3 (BST, Supressão & ESD)
+└── etapa-04-relacoes/      # Códigos do Módulo 4 (RBAC, Hasse & Grafcet)</code></pre>
+      </div>
+    </section>
+
+    <!-- 2. AUDITORIA INDIVIDUAL -->
+    <section style="margin-bottom: 3.5rem;">
+      <div class="section-header" style="text-align: left;">
+        <span class="section-tag">Critérios de Avaliação</span>
+        <h2 class="section-title" style="font-size: 1.8rem;">2. Auditoria da Contribuição Individual (Métricas de Git)</h2>
+      </div>
+
+      <div class="callout callout-danger">
+        <div class="callout-title">🚨 Aviso Rigoroso aos Estudantes</div>
+        <p>
+          <strong>É expressamente vedada a prática de um único membro enviar o código de todo o grupo.</strong> A avaliação não considera apenas a entrega final, mas a evolução contínua dos commits. A nota de cada estudante é auditada individualmente por meio das abas <em>Insights</em>, <em>Contributors</em> e histórico de <em>Pull Requests</em>.
+        </p>
+      </div>
+
+      <div class="grid-3" style="margin-top: 1.5rem;">
+        <div class="card">
+          <h4 style="color: var(--primary-light); margin-bottom: 0.5rem;">Atomicidade</h4>
+          <p style="font-size: 0.9rem; color: var(--text-muted);">
+            Realize commits frequentes e pequenos a cada avanço, evitando envios gigantescos no dia da avaliação.
+          </p>
+        </div>
+
+        <div class="card">
+          <h4 style="color: var(--accent-green); margin-bottom: 0.5rem;">Padronização</h4>
+          <p style="font-size: 0.9rem; color: var(--text-muted);">
+            Utilize o padrão <em>Conventional Commits</em> (ex: <code>feat:</code>, <code>fix:</code>, <code>docs:</code>, <code>test:</code>).
+          </p>
+        </div>
+
+        <div class="card">
+          <h4 style="color: var(--accent-color); margin-bottom: 0.5rem;">Code Review</h4>
+          <p style="font-size: 0.9rem; color: var(--text-muted);">
+            Abra <em>Pull Requests</em> para que seus colegas de equipe revisem e aprovem a integração antes do merge na <code>main</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. MATRIZ 5W2H -->
+    <section style="margin-bottom: 3.5rem;">
+      <div class="section-header" style="text-align: left;">
+        <span class="section-tag">Metodologia de Gestão</span>
+        <h2 class="section-title" style="font-size: 1.8rem;">3. Aplicação da Matriz 5W2H na Engenharia de Automação</h2>
+      </div>
+
+      <p style="margin-bottom: 1.25rem;">
+        A Matriz <strong>5W2H</strong> é a ferramenta clássica de engenharia empregada para planejar, distribuir responsabilidades e garantir a rastreabilidade das entregas em cada fase:
+      </p>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 15%;">Dimensão 5W2H</th>
+              <th style="width: 25%;">Pergunta Diretriz</th>
+              <th style="width: 60%;">Aplicação Prática no SCADA-Core</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>What?</strong> (O quê?)</td>
+              <td>Qual algoritmo ou entregável deve ser desenvolvido?</td>
+              <td>Implementação da classe <code>TagSCADA</code> com histerese e motor de intertravamento.</td>
+            </tr>
+            <tr>
+              <td><strong>Why?</strong> (Por quê?)</td>
+              <td>Qual requisito de segurança ou processo justifica a entrega?</td>
+              <td>Provar matematicamente que o Reator R-101 não atingirá combinações explosivas.</td>
+            </tr>
+            <tr>
+              <td><strong>Where?</strong> (Onde?)</td>
+              <td>Em qual pasta e arquivo do repositório o código reside?</td>
+              <td>No arquivo <code>etapa-01-logica/03 - Tautologias e Contradicoes.ipynb</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>When?</strong> (Quando?)</td>
+              <td>Qual é o prazo limite de commit e apresentação?</td>
+              <td>Até o encerramento da Aula 10 (Avaliação do Módulo 1).</td>
+            </tr>
+            <tr>
+              <td><strong>Who?</strong> (Quem?)</td>
+              <td>Qual integrante é o responsável pelo commit principal?</td>
+              <td>Aluno responsável designado na ata de divisão de tarefas do grupo.</td>
+            </tr>
+            <tr>
+              <td><strong>How?</strong> (Como?)</td>
+              <td>Qual método matemático e estrutura algorítmica será utilizada?</td>
+              <td>Prova formal de tautologia por equivalências e tabela-verdade exaustiva.</td>
+            </tr>
+            <tr>
+              <td><strong>How Much?</strong> (Quanto custa?)</td>
+              <td>Qual é o custo computacional ou métrica de sucesso?</td>
+              <td>Tempo de resposta $< 10\text{ ms}$ para avaliação de intertravamentos de segurança.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- NAVEGAÇÃO -->
+    <div style="display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+      <a href="etapa-01-logica.html" class="btn btn-outline">← Etapa 01: Lógica Formal</a>
+      <a href="../index.html" class="btn btn-primary">Voltar à Página Principal 🏠</a>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-bottom">
+      <p>© 2026.2 ECAA08 Automática • Engenharia de Controle e Automação • UNIFEI</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
