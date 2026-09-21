@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UNIFEI - Busca em Grafos</title>
+<link rel="icon" type="image/x-icon" href="https://transparencia.unifei.edu.br/wp-content/uploads/2023/09/cropped-simbolo_RGB-32x32.png" />
+<style>
+  :root { --bg:#101522; --panel:#182033; --text:#eef3ff; --muted:#aeb9cf; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,Segoe UI,sans-serif; }
+  .wrap { max-width:1200px; margin:auto; padding:18px; }
+  h1 { margin:0 0 6px; font-size:25px; }
+  p { color:var(--muted); margin:5px 0 14px; }
+  .bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; background:var(--panel); padding:12px; border-radius:12px; }
+  label { color:var(--muted); }
+  select,button { background:#222d44; color:var(--text); border:1px solid #3a4967; border-radius:7px; padding:8px 10px; }
+  button { cursor:pointer; }
+  button:hover { background:#2b3955; }
+  .stats { margin-left:auto; display:flex; gap:16px; font-variant-numeric:tabular-nums; }
+  .game { display:grid; grid-template-columns:minmax(500px,1fr) 280px; gap:14px; margin-top:14px; }
+  canvas { width:100%; height:auto; display:block; background:#d8c89a; border-radius:12px; cursor:crosshair; }
+  .side { background:var(--panel); border-radius:12px; padding:14px; }
+  .side h2 { margin:0 0 10px; font-size:18px; }
+  .legend { display:grid; gap:9px; color:var(--muted); font-size:14px; }
+  .sw { display:inline-block; width:18px; height:18px; border-radius:4px; vertical-align:middle; margin-right:7px; }
+  .hint { margin-top:15px; padding:10px; border:1px solid #35445f; border-radius:8px; color:#c7d1e5; font-size:13px; line-height:1.4; }
+  @media(max-width:850px){ .game{grid-template-columns:1fr}.stats{margin-left:0} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Labirinto de Busca em Grafos</h1>
+  <p>Clique no mapa para definir o destino. O personagem calcula o caminho inteiramente no navegador.</p>
+  <div class="bar">
+    <label for="algo">Algoritmo:</label>
+    <select id="algo">
+      <option value="bfs">BFS — Busca em Largura</option>
+      <option value="dfs">DFS — Busca em Profundidade</option>
+      <option value="dijkstra">Dijkstra — menor custo</option>
+      <option value="greedy">Greedy Best-First</option>
+      <option value="astar" selected>A* — custo + heurística</option>
+    </select>
+    <button id="newmap">Novo mapa</button>
+    <button id="clear">Limpar caminho</button>
+    <div class="stats">
+      <span>Visitados: <b id="visited">0</b></span>
+      <span>Custo: <b id="cost">—</b></span>
+      <span>Passos: <b id="steps">—</b></span>
+    </div>
+  </div>
+
+  <div class="game">
+    <canvas id="map" width="900" height="600"></canvas>
+    <aside class="side">
+      <h2>Legenda</h2>
+      <div class="legend">
+        <div><span class="sw" style="background:#75b84c"></span>Planície — peso 1</div>
+        <div><span class="sw" style="background:#9a754c"></span>Montanha — peso 4</div>
+        <div><span class="sw" style="background:#557d43"></span>Pântano — peso 8</div>
+        <div><span class="sw" style="background:#267bc2"></span>Lago — intransponível</div>
+        <div><span class="sw" style="background:#f3d84b"></span>Origem</div>
+        <div><span class="sw" style="background:#ed635d"></span>Destino</div>
+        <div><span class="sw" style="background:#ffffff"></span>Caminho</div>
+      </div>
+      <div class="hint">
+        <b>Experimento:</b> escolha o mesmo destino com algoritmos diferentes.
+        BFS/DFS ignoram os pesos; Dijkstra e A* consideram o custo.
+        A busca gulosa usa apenas a distância estimada ao objetivo.
+      </div>
+      <div class="hint">
+        <b>Contagem:</b> “Visitados” é o número de vértices retirados da fila/pilha de prioridade até o objetivo ser encontrado.
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('map'), ctx = canvas.getContext('2d');
+const algoEl = document.getElementById('algo');
+const visitedEl = document.getElementById('visited'), costEl = document.getElementById('cost'), stepsEl = document.getElementById('steps');
+
+const COLS=30, ROWS=20, CELL=30;
+let grid=[], start={x:2,y:10}, goal=null, path=[], explored=[], running=false;
+
+const terrain = [
+  {name:'plain', weight:1, color:'#75b84c'},
+  {name:'mountain', weight:4, color:'#9a754c'},
+  {name:'swamp', weight:8, color:'#557d43'},
+  {name:'lake', weight:Infinity, color:'#267bc2'}
+];
+
+function rnd(a,b){return Math.random()*(b-a)+a}
+function key(x,y){return y*COLS+x}
+function inBounds(x,y){return x>=0&&x<COLS&&y>=0&&y<ROWS}
+function neighbors(n){
+  const out=[];
+  for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+    const x=n.x+dx,y=n.y+dy;
+    if(inBounds(x,y)&&grid[y][x]!==3) out.push({x,y});
+  }
+  return out;
+}
+function makeMap(){
+  grid=Array.from({length:ROWS},()=>Array(COLS).fill(0));
+  // Deterministic-ish terrain bands plus randomness for a readable educational map.
+  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
+    let r=Math.random();
+    let t=0;
+    if((x>7&&x<13&&y>2&&y<17) || r<.11) t=3;
+    else if((x>17&&x<23&&y<9) || r<.13) t=2;
+    else if((x>11&&x<18&&y>12) || r<.18) t=1;
+    grid[y][x]=t;
+  }
+  // Ensure a broad traversable corridor and start area.
+  for(let x=0;x<8;x++) for(let y=8;y<13;y++) grid[y][x]=0;
+  grid[start.y][start.x]=0;
+  goal=null; path=[]; explored=[]; resetStats(); draw();
+}
+function resetStats(){visitedEl.textContent='0';costEl.textContent='—';stepsEl.textContent='—'}
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
+    const t=terrain[grid[y][x]];
+    ctx.fillStyle=t.color; ctx.fillRect(x*CELL,y*CELL,CELL,CELL);
+    ctx.strokeStyle='rgba(0,0,0,.16)'; ctx.strokeRect(x*CELL,y*CELL,CELL,CELL);
+    if(grid[y][x]===1){ctx.fillStyle='rgba(255,255,255,.16)'; for(let i=0;i<3;i++) ctx.fillRect(x*CELL+5+i*8,y*CELL+20-i*4,4,4)}
+    if(grid[y][x]===2){ctx.fillStyle='rgba(20,30,10,.3)'; ctx.beginPath();ctx.arc(x*CELL+8,y*CELL+9,3,0,7);ctx.arc(x*CELL+20,y*CELL+17,4,0,7);ctx.fill()}
+  }
+  for(const n of explored){ctx.fillStyle='rgba(255,230,100,.22)';ctx.fillRect(n.x*CELL+3,n.y*CELL+3,CELL-6,CELL-6)}
+  for(const n of path){ctx.fillStyle='rgba(255,255,255,.82)';ctx.beginPath();ctx.arc(n.x*CELL+15,n.y*CELL+15,5,0,Math.PI*2);ctx.fill()}
+  drawMarker(start,'#f3d84b','S'); if(goal) drawMarker(goal,'#ed635d','G');
+}
+function drawMarker(n,c,label){
+  ctx.fillStyle=c;ctx.beginPath();ctx.arc(n.x*CELL+15,n.y*CELL+15,10,0,7);ctx.fill();
+  ctx.fillStyle='#111';ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,n.x*CELL+15,n.y*CELL+15);
+}
+function heuristic(a,b){return Math.abs(a.x-b.x)+Math.abs(a.y-b.y)}
+function terrainCost(n){return terrain[grid[n.y][n.x]].weight}
+
+function reconstruct(parent, target){
+  const p=[]; let k=key(target.x,target.y);
+  while(k!==undefined){const n=parent.get(k); const [y,x]=[Math.floor(k/COLS),k%COLS]; p.push({x,y}); if(k===key(start.x,start.y))break; k=n;}
+  p.reverse(); return p;
+}
+function search(){
+  if(!goal || running) return;
+  running=true; path=[]; explored=[]; resetStats();
+  const mode=algoEl.value, s=start, g=goal;
+  const parent=new Map(), dist=new Map([[key(s.x,s.y),0]]);
+  const seen=new Set([key(s.x,s.y)]);
+  let frontier=[];
+  if(mode==='bfs'||mode==='dfs') frontier=[{x:s.x,y:s.y}];
+  else frontier=[{x:s.x,y:s.y,score:0}];
+  let visited=0, found=false, targetNode=null;
+
+  function push(n,score=0){frontier.push({x:n.x,y:n.y,score})}
+  function pop(){
+    if(mode==='dfs') return frontier.pop();
+    if(mode==='bfs') return frontier.shift();
+    let bi=0; for(let i=1;i<frontier.length;i++) if(frontier[i].score<frontier[bi].score) bi=i;
+    return frontier.splice(bi,1)[0];
+  }
+  function tick(){
+    if(frontier.length===0){finish();return}
+    const cur=pop(), ck=key(cur.x,cur.y);
+    if(explored.some(n=>key(n.x,n.y)===ck)){requestAnimationFrame(tick);return}
+    explored.push({x:cur.x,y:cur.y}); visited++;
+    if(ck===key(g.x,g.y)){targetNode=cur; found=true; finish();return}
+    for(const nb of neighbors(cur)){
+      const nk=key(nb.x,nb.y);
+      const newCost=(dist.get(ck)||0)+terrainCost(nb);
+      if(mode==='bfs'||mode==='dfs'){
+        if(seen.has(nk)) continue;
+        seen.add(nk); parent.set(nk,ck); push(nb);
+      } else if(mode==='dijkstra'){
+        if(newCost < (dist.get(nk)??Infinity)){
+          dist.set(nk,newCost); parent.set(nk,ck); push(nb,newCost);
+        }
+      } else if(mode==='greedy'){
+        if(seen.has(nk)) continue;
+        seen.add(nk); parent.set(nk,ck); push(nb,heuristic(nb,g));
+      } else if(mode==='astar'){
+        if(newCost < (dist.get(nk)??Infinity)){
+          dist.set(nk,newCost); parent.set(nk,ck); push(nb,newCost+heuristic(nb,g));
+        }
+      }
+    }
+    visitedEl.textContent=visited; draw();
+    requestAnimationFrame(tick);
+  }
+  function finish(){
+    if(found){
+      path=reconstruct(parent,targetNode);
+      stepsEl.textContent=path.length-1;
+      let c=0; for(let i=1;i<path.length;i++) c+=terrainCost(path[i]);
+      costEl.textContent=c;
+    } else { stepsEl.textContent='sem caminho'; costEl.textContent='—'; }
+    visitedEl.textContent=visited; running=false; draw();
+  }
+  requestAnimationFrame(tick);
+}
+
+canvas.addEventListener('click',e=>{
+  if(running)return;
+  const r=canvas.getBoundingClientRect();
+  const x=Math.floor((e.clientX-r.left)*(canvas.width/r.width)/CELL);
+  const y=Math.floor((e.clientY-r.top)*(canvas.height/r.height)/CELL);
+  if(!inBounds(x,y)||grid[y][x]===3||key(x,y)===key(start.x,start.y))return;
+  goal={x,y}; path=[]; explored=[]; resetStats(); draw(); search();
+});
+algoEl.addEventListener('change',()=>{if(goal&&!running){path=[];explored=[];resetStats();draw();search()}});
+document.getElementById('newmap').onclick=()=>{if(!running)makeMap()};
+document.getElementById('clear').onclick=()=>{if(!running){goal=null;path=[];explored=[];resetStats();draw()}};
+makeMap();
+</script>
+</body>
+</html>
