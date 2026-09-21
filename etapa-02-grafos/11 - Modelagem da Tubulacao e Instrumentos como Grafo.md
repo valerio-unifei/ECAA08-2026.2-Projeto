@@ -12,15 +12,15 @@ Onde:
 
 ```mermaid
 graph LR
-    TK301["TK-301: Amônia (NH3)"] -->|15m (XV-301)| MAN101["MAN-101: Manifold"]
-    TK302["TK-302: Ácido (H3PO4)"] -->|12m (XV-302)| MAN101
-    MAN101 -->|8m (XV-101A)| P101["P-101: Bomba A"]
-    MAN101 -->|10m (XV-101B)| P102["P-102: Bomba B"]
-    P101 -->|25m (XV-102A)| R101["R-101: Reator"]
-    P102 -->|22m (XV-102B)| R101
-    R101 -->|30m (XV-201)| GRAN201["GRAN-201: Granulador"]
-    R101 -->|18m (XV-202)| TK303["TK-303: Pulmão"]
-    TK303 -->|20m (XV-203)| GRAN201
+    TK301["TK-301: Amônia - NH3"] -->|15m - XV-301| MAN101["MAN-101: Manifold"]
+    TK302["TK-302: Ácido - H3PO4"] -->|12m - XV-302| MAN101
+    MAN101 -->|8m - XV-101A| P101["P-101: Bomba A"]
+    MAN101 -->|10m - XV-101B| P102["P-102: Bomba B"]
+    P101 -->|25m - XV-102A| R101["R-101: Reator"]
+    P102 -->|22m - XV-102B| R101
+    R101 -->|30m - XV-201| GRAN201["GRAN-201: Granulador"]
+    R101 -->|18m - XV-202| TK303["TK-303: Pulmão"]
+    TK303 -->|20m - XV-203| GRAN201
 ```
 
 ---
