@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jogo Euleriano</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--tx:#1b2333;--mut:#5b6577;--ac:#2563eb;--ac2:#be185d;--ln:#c4cad6;--ok:#15803d;--bad:#b91c1c;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111622;--card:#1a2132;--tx:#e8ebf3;--mut:#9aa4b8;--ac:#60a5fa;--ac2:#f472b6;--ln:#485270;--ok:#4ade80;--bad:#f87171}}
+:root[data-theme="dark"]{--bg:#111622;--card:#1a2132;--tx:#e8ebf3;--mut:#9aa4b8;--ac:#60a5fa;--ac2:#f472b6;--ln:#485270;--ok:#4ade80;--bad:#f87171}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 Georgia,"Times New Roman",serif}
+main{max-width:860px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:2rem;margin:.2em 0;line-height:1.2}
+h2{font-size:1.3rem;margin:1.6em 0 .4em}
+p{margin:.5em 0}
+.sub{color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:16px;margin:14px 0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:999px;border:1px solid var(--ln);background:transparent;color:var(--tx);cursor:pointer}
+.tabs button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.tabs button.done::after{content:" ✓"}
+svg{width:100%;max-width:520px;height:auto;display:block;margin:0 auto;touch-action:manipulation}
+.e{fill:none;stroke:var(--ln);stroke-width:4;stroke-linecap:round}
+.eu{fill:none;stroke:var(--ac);stroke-width:7;stroke-linecap:round}
+.hit{fill:none;stroke:transparent;stroke-width:26;cursor:pointer}
+.n{fill:var(--card);stroke:var(--tx);stroke-width:3;cursor:pointer}
+.n.odd{stroke:var(--ac2)}
+.n.cur{fill:var(--ac);stroke:var(--ac)}
+.n.st{stroke:var(--ok);stroke-width:5}
+.nt{font:bold 13px system-ui,sans-serif;fill:var(--tx);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.nt.cur{fill:#fff}
+.on-num{font:bold 11px system-ui,sans-serif;fill:#fff;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bar button{font:inherit;font-size:.9rem;padding:8px 14px;border-radius:8px;border:1px solid var(--ln);background:var(--card);color:var(--tx);cursor:pointer}
+.bar button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+#msg{min-height:3.2em;margin-top:10px;padding:10px 12px;border-radius:8px;background:var(--bg);border-left:4px solid var(--ln)}
+#msg.ok{border-color:var(--ok)}#msg.bad{border-color:var(--bad)}
+.goal{font-weight:bold}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.grid .card{margin:0}
+.grid h3{margin:0 0 4px;font-size:1rem;color:var(--ac)}
+.f{font-family:"Courier New",monospace;background:var(--bg);padding:1px 6px;border-radius:4px}
+</style>
+</head>
+<body>
+<main>
+<h1>🌉 O Jogo do Caminho Euleriano</h1>
+<p class="sub">Matemática Discreta · Teoria dos Grafos</p>
+
+<div class="card">
+<p>Em 1736, <b>Leonhard Euler</b> resolveu o problema das <b>sete pontes de Königsberg</b>: é possível atravessar cada ponte exatamente uma vez? Foi o nascimento da teoria dos grafos. Em grafos:</p>
+<p>• <b>Trilha euleriana</b>: percorre toda <u>aresta</u> exatamente uma vez.<br>
+• <b>Circuito euleriano</b>: uma trilha euleriana que termina onde começou.</p>
+</div>
+
+<h2>🎮 Jogue</h2>
+<div class="card">
+<div class="tabs" id="tabs"></div>
+<p class="goal" id="goal"></p>
+<svg id="svg" viewBox="0 0 400 320" role="img" aria-label="Grafo do nível"></svg>
+<div id="msg"></div>
+<div class="bar">
+<button id="undo">↩ Desfazer</button>
+<button id="reset">⟲ Reiniciar</button>
+<button id="deg">👁 Ver graus</button>
+<button id="imp" style="display:none">🚫 Impossível!</button>
+<button id="next" class="p" style="display:none">Próximo nível →</button>
+</div>
+<p class="sub" style="font-size:.85rem">Toque num vértice para começar. Depois toque nas <b>arestas</b> (linhas) que saem do vértice atual. Vértices de contorno rosa têm grau ímpar.</p>
+</div>
+
+<h2>📚 Ideias-chave</h2>
+<div class="grid">
+<div class="card"><h3>Teorema de Euler</h3><p>Um grafo conexo tem <b>circuito</b> euleriano se, e somente se, <u>todos</u> os vértices têm grau par.</p></div>
+<div class="card"><h3>Trilha aberta</h3><p>Um grafo conexo tem trilha euleriana (não fechada) se, e somente se, tem <b>exatamente 2</b> vértices de grau ímpar. A trilha começa em um e termina no outro.</p></div>
+<div class="card"><h3>Por quê?</h3><p>Ao passar por um vértice, você "entra" e "sai", gastando 2 arestas. Só o início e o fim podem ter grau ímpar.</p></div>
+<div class="card"><h3>Lema do aperto de mãos</h3><p><span class="f">Σ grau(v) = 2·|E|</span>. Por isso, o número de vértices de grau ímpar é sempre <b>par</b>: 0, 2, 4...</p></div>
+<div class="card"><h3>Euler × Hamilton</h3><p>Verificar se existe trilha euleriana é <b>fácil</b>: basta contar graus (tempo polinomial). O problema hamiltoniano, sobre vértices, é NP-completo.</p></div>
+<div class="card"><h3>Aplicações</h3><p>Coleta de lixo e varrição de ruas, o problema do carteiro chinês, plotters, sequenciamento de DNA (grafos de De Bruijn).</p></div>
+</div>
+</main>
+
+<script>
+const ring=(n,r,cx=200,cy=160,off=-90)=>Array.from({length:n},(_,i)=>{const a=(off+360*i/n)*Math.PI/180;return[cx+r*Math.cos(a),cy+r*Math.sin(a)]});
+const k5=[];for(let i=0;i<5;i++)for(let j=i+1;j<5;j++)k5.push([i,j]);
+const oct=[ring(3,135),ring(3,60,200,160,90)];
+const octE=[[0,1],[1,2],[2,0]];[[3,4],[4,5],[5,3]].forEach(e=>octE.push(e));
+for(let i=0;i<3;i++)for(let k=0;k<3;k++)if(k!==i)octE.push([i+3,k]);
+const L=[
+{t:"1 · A casinha",mode:"path",goal:"Desenhe a casinha sem tirar o lápis do papel e sem repetir arestas (trilha euleriana).",
+ p:[[110,250],[290,250],[290,120],[110,120],[200,30]],
+ e:[[0,1],[1,2],[2,3],[3,0],[0,2],[1,3],[2,4],[3,4]],
+ win:"Conseguiu! A casinha tem exatamente 2 vértices ímpares (os de baixo), então a trilha só podia começar em um e terminar no outro."},
+{t:"2 · Pentagrama",mode:"circuit",goal:"Encontre um CIRCUITO euleriano: percorra todas as arestas e volte ao vértice inicial.",
+ p:ring(5,125),e:k5,
+ win:"Circuito fechado! O grafo K₅ tem todos os vértices com grau 4 (par), então qualquer início funciona."},
+{t:"3 · Königsberg",mode:"none",goal:"As 7 pontes de Königsberg: dá para atravessar todas exatamente uma vez? Tente ou clique em “Impossível!”.",
+ p:[[200,160],[200,40],[200,280],[340,160]],
+ e:[[0,1,28],[0,1,-28],[0,2,28],[0,2,-28],[0,3],[1,3],[2,3]],
+ win:"Foi assim que Euler provou: os 4 blocos de terra têm graus 5, 3, 3 e 3, todos ímpares. Para uma trilha, no máximo 2 poderiam ser ímpares."},
+{t:"4 · K₄",mode:"none",goal:"Neste grafo completo com 4 vértices, existe alguma trilha euleriana?",
+ p:ring(4,115,200,160,-135),e:[[0,1],[1,2],[2,3],[3,0],[0,2],[1,3]],
+ win:"Não existe: os 4 vértices têm grau 3 (ímpar). Com 4 vértices ímpares, seriam necessários pelo menos 2 traços separados."},
+{t:"5 · Octaedro",mode:"circuit",goal:"Desafio final: circuito euleriano no octaedro (12 arestas).",
+ p:[...oct[0],...oct[1]],e:octE,
+ win:"Excelente! Todos os 6 vértices têm grau 4. Dica de estratégia: nunca queime uma ponte (aresta de corte) se ainda houver outra saída. É a ideia do algoritmo de Fleury."}
+];
+const $=id=>document.getElementById(id),svg=$("svg"),NS="http://www.w3.org/2000/svg";
+let cur=0,verts=[],used=[],over=false,showDeg=false,solved=new Set();
+const deg=()=>{const d=L[cur].p.map(()=>0);L[cur].e.forEach(([u,v])=>{d[u]++;d[v]++});return d};
+function msg(t,c=""){const m=$("msg");m.textContent=t;m.className=c}
+function load(i){cur=i;verts=[];used=[];over=false;$("goal").textContent=L[i].goal;
+ $("imp").style.display=L[i].mode==="none"?"":"none";$("next").style.display="none";
+ msg("Escolha o vértice inicial.");draw();tabs()}
+function tabs(){$("tabs").innerHTML="";L.forEach((l,i)=>{const b=document.createElement("button");b.textContent=l.t;
+ b.className=(i===cur?"on ":"")+(solved.has(i)?"done":"");b.onclick=()=>load(i);$("tabs").appendChild(b)})}
+function el(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e}
+function geo(e){const l=L[cur],[u,v,c=0]=e,a=l.p[u],b=l.p[v],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,dx=b[0]-a[0],dy=b[1]-a[1],d=Math.hypot(dx,dy)||1;
+ const cx=mx-dy/d*c*2,cy=my+dx/d*c*2;return{d:`M${a[0]} ${a[1]} Q${cx} ${cy} ${b[0]} ${b[1]}`,m:[(a[0]+2*cx+b[0])/4,(a[1]+2*cy+b[1])/4]}}
+function draw(){svg.innerHTML="";const l=L[cur],dg=deg(),at=verts[verts.length-1];
+ l.e.forEach((e,i)=>{const g=geo(e),k=used.indexOf(i);el("path",{class:k>=0?"eu":"e",d:g.d});
+  const h=el("path",{class:"hit",d:g.d});h.onclick=()=>edge(i)});
+ used.forEach((i,k)=>{const m=geo(L[cur].e[i]).m;el("circle",{cx:m[0],cy:m[1],r:9,fill:"var(--ac)"});
+  el("text",{class:"on-num",x:m[0],y:m[1]}).textContent=k+1});
+ l.p.forEach((q,i)=>{const c=el("circle",{class:"n"+(showDeg&&dg[i]%2?" odd":"")+(i===at?" cur":"")+(i===verts[0]?" st":""),cx:q[0],cy:q[1],r:17});
+  c.onclick=()=>vert(i);
+  el("text",{class:"nt"+(i===at?" cur":""),x:q[0],y:q[1]}).textContent=showDeg?dg[i]:""})}
+function vert(i){if(over||verts.length)return;verts=[i];msg("Começou! Agora percorra uma aresta que saia do vértice verde.");draw()}
+function edge(i){if(over)return;if(!verts.length){msg("Primeiro escolha um vértice inicial.","bad");return}
+ if(used.includes(i)){msg("Essa aresta já foi usada.","bad");return}
+ const[u,v]=L[cur].e[i],at=verts[verts.length-1];
+ if(at!==u&&at!==v){msg("Essa aresta não sai do vértice atual (o azul).","bad");return}
+ used.push(i);verts.push(at===u?v:u);check();draw()}
+function check(){const l=L[cur],n=l.e.length,at=verts[verts.length-1];
+ if(used.length===n){
+  if(l.mode==="circuit"&&at!==verts[0]){msg("Usou todas as arestas, mas não voltou ao início. Desfaça e tente outra ordem para fechar o circuito.","bad");return}
+  over=true;solved.add(cur);msg((l.mode==="none"?"Achou uma trilha?! Releia os graus. ":"🎉 ")+l.win,"ok");
+  if(cur<L.length-1)$("next").style.display="";tabs();return}
+ const dg=used.filter(i=>L[cur].e[i].slice(0,2).includes(at)).length,tot=deg()[at];
+ if(dg===tot)msg("Preso! Sem arestas livres neste vértice. Desfaça alguns passos.","bad");
+ else msg(used.length+" de "+n+" arestas percorridas.")}
+$("undo").onclick=()=>{over=false;$("next").style.display="none";if(used.length){used.pop();verts.pop()}else verts=[];msg("Passo desfeito.");draw()};
+$("reset").onclick=()=>load(cur);
+$("next").onclick=()=>load(cur+1);
+$("deg").onclick=()=>{showDeg=!showDeg;draw()};
+$("imp").onclick=()=>{if(over)return;over=true;solved.add(cur);showDeg=true;msg("🎉 "+L[cur].win,"ok");if(cur<L.length-1)$("next").style.display="";tabs();draw()};
+load(0);
+</script>
+</body>
+</html>
