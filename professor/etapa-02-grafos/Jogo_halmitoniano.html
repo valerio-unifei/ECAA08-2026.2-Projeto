@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jogo Hamiltoniano</title>
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--tx:#1d2330;--mut:#5d6675;--ac:#c2410c;--ac2:#0f766e;--ln:#c9c5b8;--ok:#15803d;--bad:#b91c1c;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171f;--card:#1e232f;--tx:#e8eaf0;--mut:#9aa3b5;--ac:#fb923c;--ac2:#2dd4bf;--ln:#465066;--ok:#4ade80;--bad:#f87171}}
+:root[data-theme="dark"]{--bg:#14171f;--card:#1e232f;--tx:#e8eaf0;--mut:#9aa3b5;--ac:#fb923c;--ac2:#2dd4bf;--ln:#465066;--ok:#4ade80;--bad:#f87171}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 Georgia,"Times New Roman",serif}
+main{max-width:860px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:2rem;margin:.2em 0;line-height:1.2}
+h2{font-size:1.3rem;margin:1.6em 0 .4em}
+p{margin:.5em 0}
+.sub{color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:16px;margin:14px 0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:999px;border:1px solid var(--ln);background:transparent;color:var(--tx);cursor:pointer}
+.tabs button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.tabs button.done::after{content:" ✓"}
+svg{width:100%;max-width:520px;height:auto;display:block;margin:0 auto;touch-action:manipulation}
+.e{stroke:var(--ln);stroke-width:3}
+.ep{stroke:var(--ac);stroke-width:6;stroke-linecap:round}
+.n{fill:var(--card);stroke:var(--ac2);stroke-width:3;cursor:pointer;transition:fill .15s}
+.n.v{fill:var(--ac2)}
+.n.h{fill:var(--ac);stroke:var(--ac)}
+.nt{font:bold 14px system-ui,sans-serif;fill:var(--tx);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.nt.v{fill:#fff}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bar button{font:inherit;font-size:.9rem;padding:8px 14px;border-radius:8px;border:1px solid var(--ln);background:var(--card);color:var(--tx);cursor:pointer}
+.bar button.p{background:var(--ac2);color:#fff;border-color:var(--ac2)}
+#msg{min-height:3.2em;margin-top:10px;padding:10px 12px;border-radius:8px;background:var(--bg);border-left:4px solid var(--ln)}
+#msg.ok{border-color:var(--ok)}#msg.bad{border-color:var(--bad)}
+.goal{font-weight:bold}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.grid .card{margin:0}
+.grid h3{margin:0 0 4px;font-size:1rem;color:var(--ac)}
+.f{font-family:"Courier New",monospace;background:var(--bg);padding:1px 6px;border-radius:4px}
+</style>
+</head>
+<body>
+<main>
+<h1>🧩 O Jogo do Caminho Hamiltoniano</h1>
+<p class="sub">Matemática Discreta · Teoria dos Grafos</p>
+
+<div class="card">
+<p>Em 1857, o matemático irlandês <b>William Rowan Hamilton</b> criou o <i>Icosian Game</i>: visitar todas as 20 cidades de um dodecaedro passando <b>uma única vez</b> por cada uma. Em grafos:</p>
+<p>• <b>Caminho hamiltoniano</b>: passa por <u>todos</u> os vértices exatamente uma vez.<br>
+• <b>Ciclo hamiltoniano</b>: um caminho hamiltoniano que ainda <u>volta</u> ao vértice inicial.</p>
+</div>
+
+<h2>🎮 Jogue</h2>
+<div class="card">
+<div class="tabs" id="tabs"></div>
+<p class="goal" id="goal"></p>
+<svg id="svg" viewBox="0 0 400 320" role="img" aria-label="Grafo do nível"></svg>
+<div id="msg"></div>
+<div class="bar">
+<button id="undo">↩ Desfazer</button>
+<button id="reset">⟲ Reiniciar</button>
+<button id="imp" style="display:none">🚫 Não existe!</button>
+<button id="next" class="p" style="display:none">Próximo nível →</button>
+</div>
+<p class="sub" style="font-size:.85rem">Toque num vértice para começar; depois toque em vizinhos ainda não visitados. Toque no último vértice para desfazê-lo.</p>
+</div>
+
+<h2>📚 Ideias-chave</h2>
+<div class="grid">
+<div class="card"><h3>Euler × Hamilton</h3><p>Euler percorre todas as <b>arestas</b> uma vez (e existe critério simples: graus pares). Hamilton visita todos os <b>vértices</b> uma vez, e não há critério simples conhecido.</p></div>
+<div class="card"><h3>Teorema de Dirac</h3><p>Se <span class="f">n ≥ 3</span> e todo vértice tem grau <span class="f">≥ n/2</span>, o grafo tem ciclo hamiltoniano. É condição <i>suficiente</i>, não necessária.</p></div>
+<div class="card"><h3>Teorema de Ore</h3><p>Se <span class="f">grau(u)+grau(v) ≥ n</span> para todo par de vértices não adjacentes, então há ciclo hamiltoniano. Generaliza Dirac.</p></div>
+<div class="card"><h3>Como provar que não existe</h3><p>Um vértice de corte impede ciclos (nível 3). Vários "vizinhos únicos" competindo pelo mesmo vértice impedem até caminhos (nível 4).</p></div>
+<div class="card"><h3>Complexidade</h3><p>Decidir se um grafo é hamiltoniano é <b>NP-completo</b>. Verificar uma resposta é fácil (como você fez!), mas achá-la pode exigir testar até <span class="f">(n−1)!</span> ordens. É a base do <b>Problema do Caixeiro Viajante</b>.</p></div>
+<div class="card"><h3>Aplicações</h3><p>Roteamento de entregas, sequenciamento de DNA, placas de circuito, códigos de Gray (ciclos hamiltonianos em hipercubos).</p></div>
+</div>
+</main>
+
+<script>
+const ring=(n,r,cx=200,cy=160,off=-90)=>Array.from({length:n},(_,i)=>{const a=(off+360*i/n)*Math.PI/180;return[cx+r*Math.cos(a),cy+r*Math.sin(a)]});
+const pet=[...ring(5,130),...ring(5,60)];
+const petE=[];for(let i=0;i<5;i++){petE.push([i,(i+1)%5],[i,i+5],[5+i,5+(i+2)%5])}
+const L=[
+{t:"1 · Aquecimento",mode:"cycle",goal:"Encontre um CICLO hamiltoniano: visite todos os vértices e volte ao início.",
+ p:ring(6,120),e:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3],[1,4]],
+ win:"Ciclo encontrado! Com 6 vértices de grau ≥ 3 = n/2, o teorema de Dirac já garantia que ele existia."},
+{t:"2 · Cubo",mode:"cycle",goal:"Encontre um CICLO hamiltoniano no cubo (hipercubo Q₃).",
+ p:[[80,30],[320,30],[320,290],[80,290],[150,100],[250,100],[250,220],[150,220]],
+ e:[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]],
+ win:"Perfeito! Ciclos hamiltonianos em hipercubos são chamados de códigos de Gray: cada passo muda só um bit."},
+{t:"3 · Gravata-borboleta",mode:"path",goal:"Encontre um CAMINHO hamiltoniano (não precisa voltar ao início).",
+ p:[[60,80],[60,240],[200,160],[340,80],[340,240]],e:[[0,1],[1,2],[0,2],[2,3],[3,4],[2,4]],
+ win:"Caminho encontrado! Mas ciclo é impossível: o vértice central é de corte, e teria de ser visitado duas vezes para voltar."},
+{t:"4 · Estrela",mode:"none",goal:"Este grafo tem caminho hamiltoniano? Tente, ou clique em “Não existe!” se achar impossível.",
+ p:[[200,160],[200,40],[80,250],[320,250]],e:[[0,1],[0,2],[0,3]],
+ win:"Exato! Os 3 vértices-folha só se ligam ao centro. Num caminho, o centro tem no máximo 2 vizinhos, então um vértice sempre fica de fora."},
+{t:"5 · Petersen",mode:"path",goal:"Grafo de Petersen: encontre um CAMINHO hamiltoniano nos 10 vértices.",
+ p:pet,e:petE,
+ win:"Conseguiu! Curiosidade: o grafo de Petersen tem caminho hamiltoniano, mas NÃO tem ciclo hamiltoniano, um famoso contraexemplo."}
+];
+let cur=0,path=[],solved=new Set(),over=false;
+const $=id=>document.getElementById(id),svg=$("svg"),NS="http://www.w3.org/2000/svg";
+const adj=()=>{const a=L[cur].p.map(()=>new Set());L[cur].e.forEach(([u,v])=>{a[u].add(v);a[v].add(u)});return a};
+function msg(t,c=""){const m=$("msg");m.textContent=t;m.className=c}
+function load(i){cur=i;path=[];over=false;const l=L[i];$("goal").textContent=l.goal;
+ $("imp").style.display=l.mode==="none"?"":"none";$("next").style.display="none";
+ msg("Escolha o vértice inicial.");draw();tabs()}
+function tabs(){$("tabs").innerHTML="";L.forEach((l,i)=>{const b=document.createElement("button");b.textContent=l.t;
+ b.className=(i===cur?"on ":"")+(solved.has(i)?"done":"");b.onclick=()=>load(i);$("tabs").appendChild(b)})}
+function el(n,a,p=svg){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e}
+function draw(){svg.innerHTML="";const l=L[cur];
+ l.e.forEach(([u,v])=>el("line",{class:"e",x1:l.p[u][0],y1:l.p[u][1],x2:l.p[v][0],y2:l.p[v][1]}));
+ const pe=[];for(let i=0;i<path.length-1;i++)pe.push([path[i],path[i+1]]);
+ if(over&&l.mode==="cycle")pe.push([path[path.length-1],path[0]]);
+ pe.forEach(([u,v])=>el("line",{class:"ep",x1:l.p[u][0],y1:l.p[u][1],x2:l.p[v][0],y2:l.p[v][1]}));
+ l.p.forEach((q,i)=>{const k=path.indexOf(i);
+  const c=el("circle",{class:"n"+(k>=0?" v":"")+(k===0?" h":""),cx:q[0],cy:q[1],r:19});
+  c.onclick=()=>click(i);
+  const t=el("text",{class:"nt"+(k>=0?" v":""),x:q[0],y:q[1]});t.textContent=k>=0?k+1:""})}
+function click(i){if(over)return;const a=adj(),n=L[cur].p.length,last=path[path.length-1];
+ if(!path.length){path=[i];msg("Bom início! Agora vá para um vizinho.")}
+ else if(i===last){path.pop();msg("Vértice desfeito.")}
+ else if(path.includes(i)){msg("Você já passou por esse vértice; vale uma vez só!","bad")}
+ else if(!a[last].has(i)){msg("Não há aresta entre esses dois vértices.","bad")}
+ else{path.push(i);msg(path.length+" de "+n+" vértices visitados.")}
+ check();draw()}
+function check(){const l=L[cur],n=l.p.length;if(path.length!==n)return;
+ const closes=adj()[path[n-1]].has(path[0]);
+ if(l.mode==="cycle"&&!closes){msg("Visitou todos, mas o último não liga ao primeiro: é só caminho. Desfaça e tente fechar o ciclo.","bad");return}
+ if(l.mode==="none"){win();return}
+ win()}
+function win(){over=true;solved.add(cur);const l=L[cur];
+ msg((l.mode==="none"?"Encontrou um caminho?! Releia o grafo. ":"🎉 ")+l.win,"ok");
+ if(cur<L.length-1)$("next").style.display="";tabs()}
+$("undo").onclick=()=>{if(over){over=false}path.pop();msg("Passo desfeito.");draw()};
+$("reset").onclick=()=>load(cur);
+$("next").onclick=()=>load(cur+1);
+$("imp").onclick=()=>{if(over)return;over=true;solved.add(cur);msg("🎉 "+L[cur].win,"ok");if(cur<L.length-1)$("next").style.display="";tabs();draw()};
+load(0);
+</script>
+</body>
+</html>
