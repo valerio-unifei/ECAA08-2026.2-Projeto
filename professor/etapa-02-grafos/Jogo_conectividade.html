@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jogo da Conectividade</title>
+<style>
+:root{--bg:#f5f4f9;--card:#fff;--tx:#201d33;--mut:#5f5b78;--ac:#7c3aed;--ln:#c6c2d8;--ok:#15803d;--bad:#dc2626;
+--c0:#0d9488;--c1:#ea580c;--c2:#2563eb;--c3:#c026d3;--c4:#65a30d;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15131f;--card:#201d30;--tx:#ebe9f5;--mut:#a29fbb;--ac:#a78bfa;--ln:#4b4766;--ok:#4ade80;--bad:#f87171;--c0:#2dd4bf;--c1:#fb923c;--c2:#60a5fa;--c3:#e879f9;--c4:#a3e635}}
+:root[data-theme="dark"]{--bg:#15131f;--card:#201d30;--tx:#ebe9f5;--mut:#a29fbb;--ac:#a78bfa;--ln:#4b4766;--ok:#4ade80;--bad:#f87171;--c0:#2dd4bf;--c1:#fb923c;--c2:#60a5fa;--c3:#e879f9;--c4:#a3e635}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 Georgia,"Times New Roman",serif}
+main{max-width:860px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:2rem;margin:.2em 0;line-height:1.2}
+h2{font-size:1.3rem;margin:1.6em 0 .4em}
+p{margin:.5em 0}
+.sub{color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:16px;margin:14px 0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+button{font:inherit;cursor:pointer}
+.tabs button{font-size:.85rem;padding:6px 12px;border-radius:999px;border:1px solid var(--ln);background:transparent;color:var(--tx)}
+.tabs button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.tabs button.done::after{content:" ✓"}
+svg{width:100%;max-width:520px;height:auto;display:block;margin:0 auto;touch-action:manipulation}
+.e{fill:none;stroke:var(--ln);stroke-width:4;stroke-linecap:round}
+.e.s{stroke:var(--ac);stroke-width:7}
+.e.b{stroke:var(--bad);stroke-width:7}
+.e.x{stroke-dasharray:3 8;opacity:.5}
+.hit{fill:none;stroke:transparent;stroke-width:26}
+.n{fill:var(--card);stroke:var(--tx);stroke-width:3}
+.n.s{stroke:var(--ac);stroke-width:6}
+.n.b{stroke:var(--bad);stroke-width:6}
+.n.x{opacity:.25;stroke-dasharray:4 4}
+.nt{font:bold 13px system-ui,sans-serif;fill:var(--tx);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.nt.w{fill:#fff}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bar button{font-size:.9rem;padding:8px 14px;border-radius:8px;border:1px solid var(--ln);background:var(--card);color:var(--tx)}
+.bar button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+#msg{min-height:3.2em;margin-top:10px;padding:10px 12px;border-radius:8px;background:var(--bg);border-left:4px solid var(--ln)}
+#msg.ok{border-color:var(--ok)}#msg.bad{border-color:var(--bad)}
+.goal{font-weight:bold}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.grid .card{margin:0}
+.grid h3{margin:0 0 4px;font-size:1rem;color:var(--ac)}
+.f{font-family:"Courier New",monospace;background:var(--bg);padding:1px 6px;border-radius:4px}
+</style>
+</head>
+<body>
+<main>
+<h1>🔗 O Jogo da Conectividade</h1>
+<p class="sub">Matemática Discreta · Teoria dos Grafos</p>
+
+<div class="card">
+<p>Uma rede de computadores, um mapa de estradas, uma rede social: todas são grafos. A pergunta central é: <b>o que acontece se algo falhar?</b></p>
+<p>• <b>Conexo</b>: existe caminho entre quaisquer dois vértices. Cada "pedaço" conexo é uma <b>componente</b>.<br>
+• <b>Ponte</b>: aresta cuja remoção <u>aumenta</u> o número de componentes.<br>
+• <b>Vértice de articulação</b>: vértice cuja remoção (com suas arestas) <u>aumenta</u> o número de componentes.</p>
+</div>
+
+<h2>🎮 Jogue</h2>
+<div class="card">
+<div class="tabs" id="tabs"></div>
+<p class="goal" id="goal"></p>
+<svg id="svg" viewBox="0 0 400 320" role="img" aria-label="Grafo do nível"></svg>
+<div id="msg"></div>
+<div class="bar" id="ans"></div>
+<div class="bar">
+<button id="check" class="p">✔ Verificar</button>
+<button id="reset">⟲ Reiniciar</button>
+<button id="next" class="p" style="display:none">Próximo nível →</button>
+</div>
+</div>
+
+<h2>📚 Ideias-chave</h2>
+<div class="grid">
+<div class="card"><h3>Ponte ⇔ fora de ciclos</h3><p>Uma aresta é ponte se, e somente se, <b>não pertence a nenhum ciclo</b>. Se há ciclo, sempre existe um desvio.</p></div>
+<div class="card"><h3>Articulação</h3><p>Um vértice é de articulação quando é o "gargalo" entre partes do grafo. Folhas (grau 1) <u>nunca</u> são de articulação.</p></div>
+<div class="card"><h3>Conectividade κ(G)</h3><p>É o menor número de vértices cuja remoção desconecta o grafo. Vale <span class="f">κ(G) ≤ λ(G) ≤ δ(G)</span> (aresta-conectividade e grau mínimo).</p></div>
+<div class="card"><h3>Biconexo</h3><p>Grafo conexo <b>sem</b> vértices de articulação (κ ≥ 2). Os maiores trechos biconexos são chamados <b>blocos</b>.</p></div>
+<div class="card"><h3>Algoritmo de Tarjan</h3><p>Com uma única busca em profundidade e o cálculo de <i>low-link</i>, encontra pontes e articulações em tempo <span class="f">O(V+E)</span>.</p></div>
+<div class="card"><h3>Ligações e aplicações</h3><p>Redes de comunicação e energia tolerantes a falhas, estradas, epidemias. Um vértice de articulação impede ciclo hamiltoniano, e uma ponte pesa no algoritmo de Fleury (euleriano).</p></div>
+</div>
+</main>
+
+<script>
+const ring=(n,r,cx=200,cy=160,off=-90)=>Array.from({length:n},(_,i)=>{const a=(off+360*i/n)*Math.PI/180;return[cx+r*Math.cos(a),cy+r*Math.sin(a)]});
+const L=[
+{t:"1 · Componentes",mode:"count",goal:"Quantas componentes conexas tem este grafo? Escolha o número.",
+ p:[[50,50],[150,50],[100,120],[100,190],[280,50],[350,50],[315,120],[300,250],[60,270],[160,250]],
+ e:[[0,1],[1,2],[0,2],[2,3],[4,5],[5,6],[4,6],[8,9]],
+ win:"Correto! São 4: um bloco com 4 vértices, um triângulo, uma dupla e um vértice isolado (que também conta como componente)."},
+{t:"2 · Pontes",mode:"bridge",goal:"Toque em TODAS as arestas que são pontes e clique em Verificar.",
+ p:[[60,60],[60,200],[150,130],[230,130],[320,60],[320,170],[340,240],[260,290]],
+ e:[[0,1],[1,2],[0,2],[3,4],[4,5],[3,5],[2,3],[5,6],[6,7]],
+ win:"Isso! As pontes são as 3 arestas que não estão em nenhum ciclo: as duas do rabo final e a que liga os triângulos."},
+{t:"3 · Articulações",mode:"art",goal:"Toque em TODOS os vértices de articulação e clique em Verificar.",
+ p:[[40,50],[140,50],[140,150],[40,150],[130,250],[230,290],[250,200],[350,130]],
+ e:[[0,1],[1,2],[2,3],[3,0],[3,4],[4,5],[5,6],[6,4],[6,7]],
+ win:"Correto! D, E e G são gargalos. Note que os vértices do quadrado A, B, C não são: sempre há um desvio pelo ciclo."},
+{t:"4 · Corte mínimo",mode:"remove",goal:"Remova vértices (toque) até DESCONECTAR o grafo, usando o mínimo possível.",
+ p:[[50,90],[70,220],[160,150],[250,80],[270,210],[360,270]],
+ e:[[0,1],[1,2],[0,2],[2,3],[3,4],[2,4],[4,5]],
+ win:"Só 1 vértice bastava: C ou E são articulações. Grafos com articulação têm κ = 1."},
+{t:"5 · Sem articulação",mode:"remove",goal:"Este grafo não tem articulações. Desconecte-o com o mínimo de vértices removidos.",
+ p:ring(6,110),e:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,3]],
+ win:"Foram necessários 2: com nenhuma articulação, remover 1 vértice nunca desconecta. Aqui κ = 2 (grafo biconexo)."}
+];
+const $=id=>document.getElementById(id),svg=$("svg"),NS="http://www.w3.org/2000/svg",lab=i=>String.fromCharCode(65+i);
+let cur=0,sel=new Set(),rem=new Set(),over=false,solved=new Set();
+function comps(rem=new Set(),skip=-1){const l=L[cur],n=l.p.length,id=Array(n).fill(-1);let c=0;
+ for(let s=0;s<n;s++){if(id[s]>=0||rem.has(s))continue;const st=[s];id[s]=c;
+  while(st.length){const u=st.pop();l.e.forEach(([a,b],i)=>{if(i===skip)return;const v=a===u?b:b===u?a:-1;if(v>=0&&!rem.has(v)&&id[v]<0){id[v]=c;st.push(v)}})}c++}
+ return{id,c}}
+const bridges=()=>{const b=comps().c;return L[cur].e.map((_,i)=>i).filter(i=>comps(new Set(),i).c>b)};
+const arts=()=>{const b=comps().c;return L[cur].p.map((_,i)=>i).filter(i=>comps(new Set([i])).c>b)};
+function kappa(){const n=L[cur].p.length;let best=n;
+ for(let m=0;m<(1<<n);m++){const r=new Set();for(let i=0;i<n;i++)if(m>>i&1)r.add(i);if(n-r.size>=2&&r.size<best&&comps(r).c>=2)best=r.size}return best}
+function msg(t,c=""){const m=$("msg");m.textContent=t;m.className=c}
+function load(i){cur=i;sel=new Set();rem=new Set();over=false;const l=L[i];$("goal").textContent=l.goal;
+ $("next").style.display="none";$("check").style.display=l.mode==="remove"?"none":"";
+ const a=$("ans");a.innerHTML="";
+ if(l.mode==="count")for(let k=1;k<=6;k++){const b=document.createElement("button");b.textContent=k;b.onclick=()=>guess(k);a.appendChild(b)}
+ msg(l.mode==="count"?"Conte os pedaços separados.":l.mode==="remove"?"Toque em um vértice para removê-lo (toque de novo para devolver).":"Faça sua seleção.");
+ draw();tabs()}
+function tabs(){$("tabs").innerHTML="";L.forEach((l,i)=>{const b=document.createElement("button");b.textContent=l.t;
+ b.className=(i===cur?"on ":"")+(solved.has(i)?"done":"");b.onclick=()=>load(i);$("tabs").appendChild(b)})}
+function el(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e}
+function draw(){svg.innerHTML="";const l=L[cur],m=l.mode,colored=m==="count"||m==="remove",cc=colored?comps(rem):null;
+ const tb=over&&m==="bridge"?new Set(bridges()):null,ta=over&&m==="art"?new Set(arts()):null;
+ l.e.forEach(([u,v],i)=>{const a=l.p[u],b=l.p[v],x=rem.has(u)||rem.has(v);
+  el("line",{class:"e"+(x?" x":"")+(sel.has(i)&&m==="bridge"?" s":"")+(tb&&tb.has(i)?" b":""),x1:a[0],y1:a[1],x2:b[0],y2:b[1]});
+  if(m==="bridge"&&!over){const h=el("line",{class:"hit",x1:a[0],y1:a[1],x2:b[0],y2:b[1]});h.style.cursor="pointer";h.onclick=()=>{sel.has(i)?sel.delete(i):sel.add(i);draw()}}});
+ l.p.forEach((q,i)=>{const x=rem.has(i),col=colored&&!x?`var(--c${cc.id[i]%5})`:"var(--card)";
+  const c=el("circle",{class:"n"+(x?" x":"")+(m==="art"&&sel.has(i)?" s":"")+(ta&&ta.has(i)?" b":""),cx:q[0],cy:q[1],r:17,fill:col});
+  if(m==="art"&&!over||m==="remove"&&!over){c.style.cursor="pointer";c.onclick=()=>vert(i)}
+  el("text",{class:"nt"+(colored&&!x?" w":""),x:q[0],y:q[1]}).textContent=lab(i)})}
+function vert(i){if(L[cur].mode==="art"){sel.has(i)?sel.delete(i):sel.add(i);draw();return}
+ rem.has(i)?rem.delete(i):rem.add(i);const n=L[cur].p.length,c=comps(rem).c,k=kappa();draw();
+ if(n-rem.size<2){msg("Restaram menos de 2 vértices: assim não há o que desconectar. Devolva alguns.","bad");return}
+ if(c>=2){if(rem.size===k){over=true;solved.add(cur);msg("🎉 "+L[cur].win+" (Você removeu "+rem.size+".)","ok");if(cur<L.length-1)$("next").style.display="";tabs();draw()}
+  else msg("Desconectou com "+rem.size+", mas dá para fazer com menos! Reinicie e procure um vértice-chave.","bad")}
+ else msg(rem.size?"Ainda conexo ("+c+" componente). Removidos: "+rem.size+".":"Toque em um vértice para removê-lo.")}
+function guess(k){if(over)return;const r=comps().c;
+ if(k===r){over=true;solved.add(cur);msg("🎉 "+L[cur].win,"ok");if(cur<L.length-1)$("next").style.display="";tabs();draw()}
+ else msg("Ainda não é "+k+". Siga as linhas e agrupe os vértices que se alcançam.","bad")}
+$("check").onclick=()=>{if(over)return;const l=L[cur],ans=new Set(l.mode==="bridge"?bridges():arts());
+ let ok=0,bad=0;sel.forEach(x=>ans.has(x)?ok++:bad++);const miss=ans.size-ok;
+ if(!sel.size){msg("Selecione ao menos um elemento.","bad");return}
+ if(!bad&&!miss){over=true;solved.add(cur);msg("🎉 "+l.win,"ok");if(cur<L.length-1)$("next").style.display="";tabs();draw()}
+ else msg("Corretas: "+ok+" · Erradas: "+bad+" · Faltando: "+miss+". Dica: remova mentalmente o elemento e veja se o grafo se parte.","bad")};
+$("reset").onclick=()=>load(cur);
+$("next").onclick=()=>load(cur+1);
+load(0);
+</script>
+</body>
+</html>
