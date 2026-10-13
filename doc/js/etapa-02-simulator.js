@@ -856,7 +856,16 @@
     const timeStr = new Date().toLocaleTimeString('pt-BR', { hour12: false });
     const line = document.createElement('div');
     line.className = 'scada-log-entry';
-    line.innerHTML = `<span style="color:#64748b;">[${timeStr}]</span> ${msg}`;
+
+    const timeSpan = document.createElement('span');
+    timeSpan.style.color = '#64748b';
+    timeSpan.textContent = `[${timeStr}] `;
+
+    const msgSpan = document.createElement('span');
+    msgSpan.textContent = msg;
+
+    line.appendChild(timeSpan);
+    line.appendChild(msgSpan);
     consoleBox.appendChild(line);
     consoleBox.scrollTop = consoleBox.scrollHeight;
   }
