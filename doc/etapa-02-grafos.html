@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Etapa 02: Teoria dos Grafos & Roteamento Logístico | SCADA-Core Automática</title>
+  <link rel="icon" type="image/x-icon" href="https://transparencia.unifei.edu.br/wp-content/uploads/2023/09/cropped-simbolo_RGB-32x32.png" />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- MathJax 3 for LaTeX equations -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+  <!-- Mermaid.js for diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-brand">
+        <span class="scada-badge" style="background: linear-gradient(135deg, #10b981, #06b6d4);">ETAPA 02</span>
+        <span>SCADA-Core Automática</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../index.html">🏠 Início</a></li>
+        <li><a href="etapa-01-logica.html">⚡ Etapa 01: Lógica</a></li>
+        <li><a href="etapa-02-grafos.html" class="active">🕸️ Etapa 02: Grafos</a></li>
+        <li><a href="#apresentacao">📽️ Apresentação (10 Slides)</a></li>
+        <li><a href="#simulador">🎛️ Emulador Logístico</a></li>
+        <li><a href="#aulas-detalhadas">📖 Aulas 11 a 18</a></li>
+        <li><a href="planta-quimica.html">🏭 Planta Modelo</a></li>
+        <li><a href="diretrizes-github.html">🐙 GitHub & 5W2H</a></li>
+      </ul>
+      <div class="nav-controls">
+        <button id="theme-toggle" class="theme-toggle-btn" title="Alternar Modo Escuro/Claro">☀️</button>
+        <button id="mobile-menu-btn" class="mobile-menu-btn">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="hero-section" style="background: linear-gradient(135deg, #070d1d 0%, #062b2b 50%, #064e3b 100%); border-bottom: 3px solid #10b981;">
+    <div class="hero-container">
+      <span class="hero-tagline" style="background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #6ee7b7;">
+        Engenharia de Controle & Automação • ECAA08 2026.2
+      </span>
+      <h1 class="hero-title">Etapa 02: Teoria dos Grafos & Roteamento Logístico</h1>
+      <p class="hero-subtitle">
+        Memorial descritivo das Aulas 11 a 18, apresentação executiva interativa em 10 slides e emulador SCADA-Graph com GUI em tempo real para modelagem de tubulações, desvio dinâmico de vazamentos, inspeção autônoma e logística de suprimentos no Complexo Industrial NPK.
+      </p>
+      
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <span>👨‍🏫 <strong>Docente:</strong> Controle & Automação</span>
+        </div>
+        <div class="hero-meta-item">
+          <span>📐 <strong>Fundamentos:</strong> Dígrafos Ponderados, Matrizes $B, A, W$, Dijkstra, Euler, Hamilton/TSP e DAGs</span>
+        </div>
+        <div class="hero-meta-item">
+          <span>🏭 <strong>Planta Modelo:</strong> Malha Hidráulica Setor 100/300 e Corredor Logístico Galpões A/B</span>
+        </div>
+        <div class="hero-meta-item">
+          <span>⏱️ <strong>Escopo:</strong> Aulas 11 a 18 (Módulo 2)</span>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a href="#apresentacao" class="btn btn-primary" style="background: linear-gradient(135deg, #059669, #10b981);">
+          📽️ Ver Apresentação (10 Slides)
+        </a>
+        <a href="#simulador" class="btn btn-primary" style="background: linear-gradient(135deg, #0891b2, #06b6d4);">
+          🎛️ Abrir Emulador SCADA-Graph
+        </a>
+        <a href="#aulas-detalhadas" class="btn btn-outline">
+          📖 Consultar Memorial Aulas 11 a 18
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-container">
+
+    <!-- CALLOUT NOTA DO PROFESSOR -->
+    <div class="callout callout-info" style="border-color: #10b981; background: rgba(16, 185, 129, 0.07); margin-bottom: 3.5rem;">
+      <div class="callout-title" style="color: #10b981;">
+        👨‍🏫 Mensagem Pedagógica: Por que Teoria dos Grafos no Controle & Automação?
+      </div>
+      <p>
+        "Caros engenheiros em formação: na operação de uma planta de fertilizantes de grande escala, não basta monitorar variáveis locais de pressão e temperatura. A infraestrutura física — composta por quilômetros de tubulações, dezenas de bombas centrífugas, válvulas de bloqueio de segurança (XV) e frotas de veículos autônomos (AGVs) — forma uma rede intrincada de fluxos e decisões. A <strong>Teoria dos Grafos</strong> fornece o rigor matemático necessário para transformar diagramas de tubulação e instrumentação (P&ID) em modelos topológicos computáveis. Com ela, resolvemos desde o <strong>balanço de massa matricial de Kirchhoff</strong> ($B \cdot \vec{Q} = \vec{S}$) e o <strong>desvio autônomo de vazamentos em frações de milissegundo</strong> via Algoritmo de Dijkstra, até a <strong>inspeção completa de integridade física sem repetição de dutos</strong> (Circuitos Eulerianos) e a <strong>coordenação logística da cadeia de suprimentos</strong> (Grafos Acíclicos Dirigidos - DAGs)."
+      </p>
+    </div>
+
+    <!-- ===================================================
+         1. APRESENTAÇÃO COM 10 SLIDES
+         =================================================== -->
+    <section id="apresentacao" style="margin-top: 1rem; margin-bottom: 4.5rem;">
+      <div class="section-header">
+        <span class="section-tag" style="color: #10b981;">Material Didático Estruturado</span>
+        <h2 class="section-title">Apresentação da Etapa 02 (10 Slides)</h2>
+        <p class="section-subtitle">
+          Navegue pelos 10 slides abaixo utilizando os botões de controle ou as setas direcionais do teclado (← e →) para explorar os conceitos matemáticos, teoremas e aplicações industriais do Módulo 2.
+        </p>
+      </div>
+
+      <div class="presentation-wrapper" style="border-color: #1e3a5f;">
+        <div class="presentation-toolbar">
+          <div class="pres-info">
+            <span>📽️ <strong>SCADA-Core: Módulo 2 • Teoria dos Grafos</strong></span>
+            <span id="pres-slide-counter">Slide 1 de 10</span>
+          </div>
+          <div class="pres-controls">
+            <button id="pres-prev-btn" class="pres-btn" disabled>← Anterior</button>
+            <button id="pres-next-btn" class="pres-btn">Próximo →</button>
+          </div>
+        </div>
+
+        <div class="presentation-viewport">
+
+          <!-- SLIDE 1 -->
+          <div class="slide active">
+            <span class="slide-number-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+              Slide 01 / 10 • Abertura
+            </span>
+            <h3 class="slide-title">SCADA-Graph: Teoria dos Grafos na Automação & Logística</h3>
+            <p class="slide-subtitle">Módulo 2: Modelagem Topológica de Redes de Processo, Roteamento Ótimo e Logística Industrial (Aulas 11 a 18)</p>
+            <div class="slide-body">
+              <div class="grid-2">
+                <div>
+                  <p><strong>Objetivo Estratégico:</strong> Representar a planta química e seu entorno logístico como estruturas discretas de grafos, viabilizando decisões autônomas de controle fluídico, tolerância a falhas e despacho de insumos.</p>
+                  <ul style="padding-left: 1.25rem; margin-top: 0.75rem; color: var(--text-muted);">
+                    <li><strong>Modelagem Estrutural:</strong> Dígrafos ponderados $G=(V, E, W)$, matrizes de incidência $B$, adjacência $A$ e custos $W$.</li>
+                    <li><strong>Algoritmos de Rede:</strong> BFS/DFS para varredura e detecção de ciclos; Dijkstra para menor perda de carga; Hierholzer para inspeção euleriana; TSP (NN + 2-Opt) para AGVs; e Kahn para ordenação de DAG.</li>
+                    <li><strong>Normas & Segurança:</strong> SIS IEC 61511 (tempo de resposta crítico), ISA-5.1 e ISA-95.</li>
+                  </ul>
+                </div>
+                <div class="card" style="text-align: center; background: rgba(16, 185, 129, 0.05); border-color: #10b981;">
+                  <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🕸️ ⚡ 🚜</div>
+                  <h4 style="color: #10b981;">Topologia Computável</h4>
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    A conversão do P&ID em grafo transforma problemas de engenharia química e mecânica em problemas clássicos de otimização combinatória e álgebra linear.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 2 -->
+          <div class="slide">
+            <span class="slide-number-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+              Slide 02 / 10 • Aula 11
+            </span>
+            <h3 class="slide-title">Aula 11: A Planta Química como Dígrafo Ponderado $G = (V, E, W)$</h3>
+            <p class="slide-subtitle">Vértices, arcos de tubulação orientados, graus topológicos e lema do aperto de mãos</p>
+            <div class="slide-body">
+              <p>A malha hidráulica do Reator R-101 e tancagem é formalizada pela tripla $G = (V, E, W)$:</p>
+              $$V = \{\text{TK-301}, \text{TK-302}, \text{MAN-101}, \text{P-101}, \text{P-102}, \text{R-101}, \text{TK-303}, \text{GRAN-201}\}, \quad |V| = 8, \quad |E| = 9$$
+              <div class="grid-2" style="margin-top: 1rem;">
+                <div>
+                  <p><strong>Lema do Aperto de Mãos Dirigido:</strong></p>
+                  $$\sum_{v \in V} \deg^+(v) = \sum_{v \in V} \deg^-(v) = |E| = 9$$
+                  <p style="font-size: 0.88rem; color: var(--text-muted);">
+                    Cada aresta contribui com $+1$ para o grau de saída $\deg^+$ e $+1$ para o grau de entrada $\deg^-$. Essa invariante audita automaticamente a consistência do banco de dados do P&ID.
+                  </p>
+                </div>
+                <div class="table-responsive" style="margin-top: 0;">
+                  <table>
+                    <tr><th>Vértice</th><th>$\deg^-$ (Alimentação)</th><th>$\deg^+$ (Descarga)</th><th>Função Física</th></tr>
+                    <tr><td><code>MAN-101</code></td><td>2 (TK-301, TK-302)</td><td>2 (P-101, P-102)</td><td>Manifold de Mistura</td></tr>
+                    <tr><td><code>R-101</code></td><td>2 (P-101, P-102)</td><td>2 (GRAN, TK-303)</td><td>Reator Neutralizador</td></tr>
+                    <tr><td><code>TK-303</code></td><td>1 (R-101)</td><td>1 (GRAN-201)</td><td>Tanque Pulmão / Contingência</td></tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 3 -->
+          <div class="slide">
+            <span class="slide-number-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+              Slide 03 / 10 • Aula 12
+            </span>
+            <h3 class="slide-title">Aula 12: Matrizes de Incidência, Adjacência & Balanço de Massa</h3>
+            <p class="slide-subtitle">Propriedade da soma nula por coluna, Primeira Lei de Kirchhoff e Matriz Laplaciana $L = B B^T$</p>
+            <div class="slide-body">
+              <p>A <strong>Matriz de Incidência Vértice-Aresta</strong> $B \in \{-1, 0, +1\}^{n \times m}$ codifica a topologia orientada:</p>
+              $$B[i, j] = \begin{cases} -1, & \text{se aresta } e_j \text{ sai de } v_i \text{ (origem)} \\ +1, & \text{se aresta } e_j \text{ entra em } v_i \text{ (destino)} \\ 0, & \text{se o nó } v_i \text{ não incide em } e_j \end{cases} \quad \implies \quad \sum_{i=1}^n B[i, j] = 0 \quad (\forall j)$$
+              <div class="grid-2" style="margin-top: 1rem;">
+                <div class="card" style="padding: 1rem;">
+                  <strong style="color: #38bdf8;">Balanço de Massa em Regime Permanente:</strong>
+                  $$B \cdot \vec{Q} = \vec{S}$$
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    Para nós intermediários sem acúmulo, $\vec{S}[k] = 0$, garantindo que a vazão de entrada iguale a de saída ($\sum Q_{\text{in}} = \sum Q_{\text{out}}$).
+                  </p>
+                </div>
+                <div class="card" style="padding: 1rem;">
+                  <strong style="color: #10b981;">Potências da Matriz de Adjacência:</strong>
+                  $$A^k[i, j] = \text{número de passeios de comprimento exatamente } k \text{ de } v_i \text{ a } v_j$$
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    Permite ao sistema supervisor identificar a existência de caminhos indiretos e redundâncias operacionais com multiplicações de matrizes.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 4 -->
+          <div class="slide">
+            <span class="slide-number-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+              Slide 04 / 10 • Aula 13
+            </span>
+            <h3 class="slide-title">Aula 13: Algoritmos de Busca — BFS vs. DFS em Tubulações</h3>
+            <p class="slide-subtitle">Minimização de comutação de válvulas, propagação de contaminação e detecção de ciclos</p>
+            <div class="slide-body">
+              <div class="grid-2">
+                <div class="card" style="padding: 1.25rem;">
+                  <h4 style="color: #38bdf8;">Busca em Largura (BFS — Fila FIFO)</h4>
+                  <ul style="padding-left: 1.25rem; font-size: 0.88rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    <li><strong>Propriedade Formal:</strong> Explora por camadas concêntricas ($d=1, 2, \dots$).</li>
+                    <li><strong>Garantia:</strong> Encontra a rota com o <em>menor número de arestas</em> ($O(|V|+|E|)$).</li>
+                    <li><strong>Aplicação Industrial:</strong> Encontra o caminho com <strong>menor quantidade de válvulas a manobrar</strong>, reduzindo o risco de falha mecânica de atuadores.</li>
+                    <li><strong>Rastreamento de Contaminação:</strong> Modela a frente de onda de dispersão de reagentes contaminados.</li>
+                  </ul>
+                </div>
+                <div class="card" style="padding: 1.25rem;">
+                  <h4 style="color: #f59e0b;">Busca em Profundidade (DFS — Pilha LIFO)</h4>
+                  <ul style="padding-left: 1.25rem; font-size: 0.88rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    <li><strong>Propriedade Formal:</strong> Avança até o extremo antes de realizar <em>backtracking</em>.</li>
+                    <li><strong>Classificação de Arestas:</strong> Identifica arestas de árvore, retorno (*back edges*), avanço e cruzamento.</li>
+                    <li><strong>Aplicação Industrial:</strong> Detecção de <strong>ciclos de recirculação não intencionais</strong> e enumeração exaustiva de rotas de contingência.</li>
+                    <li><strong>Bloqueio Dinâmico:</strong> Simulação instantânea de nós indisponíveis (bombas em manutenção).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 5 -->
+          <div class="slide">
+            <span class="slide-number-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+              Slide 05 / 10 • Aula 14
+            </span>
+            <h3 class="slide-title">Aula 14: Menor Caminho — Algoritmo de Dijkstra & Roteamento Dinâmico</h3>
+            <p class="slide-subtitle">Relaxação gulosa de arestas, fila de prioridade Min-Heap e otimização por perda de carga</p>
+            <div class="slide-body">
+              <p>Dado o dígrafo $G=(V, E, W)$ com pesos não-negativos $W: E \rightarrow \mathbb{R}^+$, o <strong>Algoritmo de Dijkstra</strong> determina o caminho de custo mínimo entre uma fonte $s$ e todos os vértices em $O((|V|+|E|)\log |V|)$:</p>
+              $$\text{Operação de Relaxação: se } d[u] + w(u, v) < d[v] \implies d[v] \leftarrow d[u] + w(u, v), \quad \text{pred}[v] \leftarrow u$$
+              <div class="grid-3" style="margin-top: 1rem;">
+                <div class="card" style="padding: 1rem;">
+                  <strong style="color: #10b981;">Min-Heap Binário:</strong> Garante extração do vértice de menor distância provisória em tempo logarítmico $O(\log |V|)$.
+                </div>
+                <div class="card" style="padding: 1rem;">
+                  <strong style="color: #38bdf8;">Vetor de Predecessores:</strong> Reconstrução determinística do caminho ótimo por retropropagação ($v_k \leftarrow \text{pred}[v_k]$).
+                </div>
+                <div class="card" style="padding: 1rem;">
+                  <strong style="color: #ef4444;">Pesos Não-Negativos:</strong> Impede que rotas com ganho de energia iludam a estratégia gulosa; para custos negativos, exige-se Bellman-Ford.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 6 -->
+          <div class="slide">
+            <span class="slide-number-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+              Slide 06 / 10 • Aula 15
+            </span>
+            <h3 class="slide-title">Aula 15: Simulação de Vazamentos, Pontes & Desvio Automático SIS</h3>
+            <p class="slide-subtitle">Reponderação dinâmica $W(u,v) \leftarrow \infty$, pontes estruturais de Tarjan e conformidade IEC 61511</p>
+            <div class="slide-body">
+              <p>Quando um detector de vazamento ou transmissor de pressão acusa perda de integridade no duto $(u, v)$, o sistema executa a **punição topológica instantânea**:</p>
+              $$W(u, v) \leftarrow \infty \quad \text{e aciona o recálculo imediato de rota via Dijkstra}$$
+              <div class="grid-2" style="margin-top: 1rem;">
+                <div>
+                  <h4 style="color: #f59e0b; margin-bottom: 0.5rem;">Conceito Crítico: Pontes & Vértices de Corte</h4>
+                  <p style="font-size: 0.88rem; color: var(--text-muted);">
+                    Uma aresta é uma <strong>ponte (*bridge*)</strong> se sua remoção desconecta o grafo. O trecho <code>R-101 ➔ GRAN-201</code> <strong>não é ponte</strong> porque o tanque pulmão <code>TK-303</code> provê uma rota alternativa de 2-aresta-conectividade. Se uma ponte rompe, o sistema aciona parada de emergência (ESD).
+                  </p>
+                </div>
+                <div class="card" style="background: rgba(239, 68, 68, 0.05); border-color: #ef4444; padding: 1rem;">
+                  <h4 style="color: #ef4444; margin-bottom: 0.5rem;">Tempo de Resposta do SIS (IEC 61511)</h4>
+                  <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    O tempo de decisão computacional do algoritmo no SCADA ($t_{\text{dec}} \approx 0.1\text{ ms}$) é centenas de vezes inferior ao tempo de fechamento mecânico das válvulas pneumáticas ($t_{\text{atuador}} \approx 1\text{ a } 3\text{ s}$), garantindo que o gargalo de segurança seja exclusivamente eletromecânico.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 7 -->
+          <div class="slide">
+            <span class="slide-number-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+              Slide 07 / 10 • Aula 16
+            </span>
+            <h3 class="slide-title">Aula 16: Problemas Eulerianos & Inspeção Autônoma de Dutos</h3>
+            <p class="slide-subtitle">As Sete Pontes de Königsberg, Teorema de Euler e Algoritmo de Hierholzer em $O(|E|)$</p>
+            <div class="slide-body">
+              <p>Para inspecionar <strong>todas as tubulações da planta sem repetir nenhum trecho</strong>, recorre-se a um <strong>Circuito Euleriano</strong>:</p>
+              $$\text{Teorema de Euler (1736): Um grafo conexo possui circuito euleriano } \iff \forall v \in V, \, \deg(v) \text{ é par}$$
+              <div class="grid-2" style="margin-top: 1rem;">
+                <div class="card" style="padding: 1rem;">
+                  <strong style="color: #38bdf8;">Algoritmo de Hierholzer (1873):</strong>
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
+                    Utiliza uma pilha explícita com remoção de arestas visitadas. Constrói o circuito em tempo linear $O(|E|)$ — a complexidade assintótica ótima para examinar toda a infraestrutura física.
+                  </p>
+                </div>
+                <div class="card" style="padding: 1rem;">
+                  <strong style="color: #10b981;">Robôs Rastejadores & Drones (NDT):</strong>
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
+                    Varredura por ultrassom de espessura de parede e corrosão sob isolamento térmico sem redundância de trajeto, minimizando tempo de parada e consumo energético da bateria.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 8 -->
+          <div class="slide">
+            <span class="slide-number-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+              Slide 08 / 10 • Aula 17
+            </span>
+            <h3 class="slide-title">Aula 17: Problemas Hamiltonianos & Roteamento de AGVs (TSP)</h3>
+            <p class="slide-subtitle">Diferença essencial de Euler, complexidade NP-difícil, heurística Nearest Neighbor e refinamento 2-Opt</p>
+            <div class="slide-body">
+              <p>O <strong>Problema do Caixeiro-Viajante (TSP)</strong> busca o ciclo de menor distância que visita <strong>cada equipamento exatamente uma vez</strong> e retorna à base:</p>
+              <div class="grid-2" style="margin-top: 0.75rem;">
+                <div>
+                  <p><strong>Contraste Fundamental:</strong></p>
+                  <ul style="padding-left: 1.25rem; font-size: 0.88rem; color: var(--text-muted);">
+                    <li><strong>Circuito Euleriano:</strong> Visita toda <em>aresta</em> (duto) uma vez. Decidível em tempo linear $O(|E|)$.</li>
+                    <li><strong>Ciclo Hamiltoniano / TSP:</strong> Visita todo <em>vértice</em> (estação) uma vez. Problema <strong>NP-difícil</strong> ($O(n!)$ por força bruta).</li>
+                  </ul>
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    Para resolver instâncias de fábrica com tempo real, empregamos a heurística construtiva <strong>Nearest Neighbor ($O(n^2)$)</strong> combinada com a busca local <strong>2-Opt ($O(n^3)$)</strong>.
+                  </p>
+                </div>
+                <div class="card" style="background: rgba(245, 158, 11, 0.05); border-color: #f59e0b; padding: 1rem;">
+                  <h4 style="color: #f59e0b; margin-bottom: 0.5rem;">Desempate Geométrico com 2-Opt</h4>
+                  <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    O algoritmo 2-Opt remove pares de arestas não-adjacentes e reconecta os nós de forma invertida se houver redução de custo. Pela <em>desigualdade triangular</em>, isso elimina sistematicamente todos os "cruzamentos" desnecessários no trajeto do AGV.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 9 -->
+          <div class="slide">
+            <span class="slide-number-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+              Slide 09 / 10 • Aula 18
+            </span>
+            <h3 class="slide-title">Aula 18: Logística Multicamada, Fluxo DAG & Algoritmo de Kahn</h3>
+            <p class="slide-subtitle">Redes multicamadas ($G_M, G_V, G_E$), irreversibilidade termodinâmica e ordenação topológica de produção</p>
+            <div class="slide-body">
+              <p>O fluxo de materiais do recebimento até a expedição forma um <strong>Grafo Acíclico Dirigido (DAG)</strong>: as etapas de transformação química e mecânica são irreversíveis no regime normal de produção.</p>
+              <div class="grid-2" style="margin-top: 0.75rem;">
+                <div class="card" style="padding: 1rem;">
+                  <strong style="color: #38bdf8;">Rede Multicamada Industrial:</strong>
+                  <ul style="padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
+                    <li><strong>$G_M$ (Materiais):</strong> Fluxo físico de insumos a produtos (DAG).</li>
+                    <li><strong>$G_V$ (Veículos):</strong> Circulação de caminhões e empilhadeiras.</li>
+                    <li><strong>$G_E$ (Estoque):</strong> Endereçamento em porta-paletes e boxes.</li>
+                  </ul>
+                </div>
+                <div class="card" style="padding: 1rem;">
+                  <strong style="color: #10b981;">Algoritmo de Kahn (1962):</strong>
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
+                    Calcula a ordenação topológica em $O(|V|+|E|)$ removendo sucessivamente nós com grau de entrada zero ($\deg^- = 0$). Permite auditar matematicamente se ordens de batelada violam as precedências da fábrica.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLIDE 10 -->
+          <div class="slide">
+            <span class="slide-number-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+              Slide 10 / 10 • Síntese Integrada
+            </span>
+            <h3 class="slide-title">Síntese da Etapa 02 & Arquitetura do Emulador SCADA-Graph</h3>
+            <p class="slide-subtitle">Unificação da Teoria dos Grafos em um Sistema Ciberfísico Integrado</p>
+            <div class="slide-body">
+              <p>A Etapa 02 consolida as pontes entre a matemática pura e o chão de fábrica moderno:</p>
+              <div class="table-responsive" style="margin-top: 0.75rem;">
+                <table>
+                  <tr><th>Conceito de Grafos</th><th>Ferramenta Algorítmica</th><th>Aplicação SCADA-Core</th><th>Complexidade</th></tr>
+                  <tr><td>Dígrafo Ponderado $G=(V,E,W)$</td><td>Matriz de Incidência $B$</td><td>Balanço de Massa Matricial de Kirchhoff</td><td>$O(n \cdot m)$</td></tr>
+                  <tr><td>Menor Caminho em Dígrafo</td><td>Algoritmo de Dijkstra</td><td>Roteamento Hidráulico e Perda de Carga</td><td>$O((V+E)\log V)$</td></tr>
+                  <tr><td>Grafos Dinâmicos e Pontes</td><td>Reponderação $W \to \infty$</td><td>Desvio de Vazamentos e Intertravamento SIS</td><td>Tempo Real (&lt;1ms)</td></tr>
+                  <tr><td>Circuito Euleriano</td><td>Hierholzer com Pilha</td><td>Inspeção Não-Destrutiva Total de Tubulações</td><td>$O(|E|)$</td></tr>
+                  <tr><td>Ciclo Hamiltoniano (TSP)</td><td>Nearest Neighbor + 2-Opt</td><td>Despacho e Trajetória de AGVs no Pátio</td><td>$O(n^2) \to O(n^3)$</td></tr>
+                  <tr><td>Grafo Acíclico Dirigido (DAG)</td><td>Algoritmo de Kahn</td><td>Sequenciamento de Bateladas e Rastreabilidade</td><td>$O(|V|+|E|)$</td></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Dots Controller -->
+        <div class="presentation-footer" style="padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; background: #091224; border-top: 1px solid #1e3a5f;">
+          <div class="slide-dots" id="slide-dots"></div>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Dica: Utilize as setas ← e → do teclado</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================
+         2. SIMULADOR SCADA-GRAPH LOGÍSTICO EM JAVASCRIPT
+         =================================================== -->
+    <section id="simulador" style="margin-top: 3.5rem; margin-bottom: 5rem;">
+      <div class="section-header">
+        <span class="section-tag" style="color: #06b6d4;">Ambiente Ciberfísico Interativo</span>
+        <h2 class="section-title">Emulador Logístico & SCADA-Graph em Tempo Real</h2>
+        <p class="section-subtitle">
+          Simulador visual em JavaScript e SVG com cálculo dinâmico de caminhos mínimos (Dijkstra), injeção de falhas e vazamentos em tubulações, inspeção euleriana, despacho de AGV (TSP) e validação de DAG logístico.
+        </p>
+      </div>
+
+      <div class="scada-sim-container" style="border-color: #0d9488; box-shadow: 0 0 25px rgba(13, 148, 136, 0.25);">
+        
+        <!-- Header da Simulação -->
+        <div class="scada-header" style="border-bottom-color: #134e4a;">
+          <div class="scada-title-box">
+            <div class="scada-live-indicator" style="background: #14b8a6; box-shadow: 0 0 10px #14b8a6;"></div>
+            <div>
+              <h3 style="font-size: 1.15rem; margin: 0; font-family: var(--font-mono); color: #ffffff;">
+                SCADA-GRAPH: COMPLEXO NPK • REDE HIDRÁULICA & CORREDOR LOGÍSTICO
+              </h3>
+              <small style="color: #94a3b8; font-family: var(--font-mono);">
+                Motor Topológico em JavaScript • Frequência: 100Hz • Módulo SIS IEC 61511 Ativo
+              </small>
+            </div>
+          </div>
+          <div>
+            <span style="background: rgba(20, 184, 166, 0.2); border: 1px solid #14b8a6; color: #2dd4bf; padding: 0.3rem 0.8rem; border-radius: 999px; font-size: 0.8rem; font-weight: bold; font-family: var(--font-mono);">
+              ONLINE • REDE ATIVA
+            </span>
+          </div>
+        </div>
+
+        <!-- Injeção Rápida de Cenários Didáticos -->
+        <div style="margin-bottom: 1.25rem;">
+          <small style="color: #94a3b8; font-family: var(--font-mono); display: block; margin-bottom: 0.5rem; text-transform: uppercase;">
+            ⚡ INJEÇÃO RÁPIDA DE CENÁRIOS INDUSTRIAIS & LOGÍSTICOS:
+          </small>
+          <div class="preset-buttons" style="display: flex; flex-wrap: wrap; gap: 0.6rem;">
+            <button id="preset-g2-nominal" class="preset-btn" style="border-color: #10b981; color: #6ee7b7;">
+              🟢 Cenário 1: Operação Nominal (TK-301 ➔ GRAN)
+            </button>
+            <button id="preset-g2-leak" class="preset-btn" style="border-color: #ef4444; color: #fca5a5;">
+              🔴 Cenário 2: Vazamento R-101 ➔ GRAN (Desvio TK-303)
+            </button>
+            <button id="preset-g2-pump-fail" class="preset-btn" style="border-color: #f59e0b; color: #fde68a;">
+              ⚡ Cenário 3: Falha Bomba P-101 (Failover para P-102)
+            </button>
+            <button id="preset-g2-agv" class="preset-btn" style="border-color: #38bdf8; color: #bae6fd;">
+              🚜 Cenário 4: Rota AGV (TSP Coleta de Amostras)
+            </button>
+            <button id="preset-g2-euler" class="preset-btn" style="border-color: #c084fc; color: #e9d5ff;">
+              🔍 Cenário 5: Varredura de Corrosão (Hierholzer)
+            </button>
+          </div>
+        </div>
+
+        <!-- Banner de Status do Simulador -->
+        <div id="scada-status-banner" class="callout callout-info" style="margin: 0.5rem 0 1.25rem; padding: 0.75rem 1rem; font-size: 0.9rem;">
+          Sistema em prontidão operacional. Selecione um cenário ou clique em tubulações para simular eventos.
+        </div>
+
+        <!-- Painel Central: Grid Sinótico SVG + Controles SCADA -->
+        <div class="scada-grid" style="grid-template-columns: 1.5fr 1fr;">
+          
+          <!-- LADO ESQUERDO: SINÓTICO SVG INTERATIVO -->
+          <div class="scada-synoptic" style="background: #030816; border: 1px solid #134e4a; padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <strong style="color: #2dd4bf; font-family: var(--font-mono); font-size: 0.85rem;">
+                MAPA TOPOLÓGICO INTERATIVO (TUBULAÇÕES + CORREDOR LOGÍSTICO)
+              </strong>
+              <small style="color: #64748b; font-family: var(--font-mono);">Clique em nós ou dutos</small>
+            </div>
+
+            <!-- Viewport SVG -->
+            <div class="synoptic-svg-wrap" style="height: 420px; width: 100%;">
+              <svg id="scada-graph-svg" viewBox="0 0 880 430" style="width: 100%; height: 100%; display: block;"></svg>
+            </div>
+
+            <!-- Faixa de Válvulas e Atuadores -->
+            <div style="margin-top: 0.75rem; border-top: 1px solid #1e293b; padding-top: 0.5rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <span style="font-size: 0.75rem; color: #94a3b8; font-family: var(--font-mono); font-weight: bold;">
+                  ESTADO DAS VÁLVULAS SOLENOIDES ISA-5.1 (INTERTRAVAMENTO AUTOMÁTICO):
+                </span>
+              </div>
+              <div id="scada-valves-display" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
+            </div>
+          </div>
+
+          <!-- LADO DIREITO: CONTROLES E TELEMETRIA -->
+          <div class="scada-controls-panel" style="background: #0a1628; border-color: #1e3a5f;">
+            
+            <h4 style="color: #38bdf8; font-family: var(--font-mono); font-size: 0.95rem; margin-bottom: 1rem; border-bottom: 1px solid #1e3a5f; padding-bottom: 0.4rem;">
+              🎛️ PAINEL DE CONTROLE DE ROTEAMENTO
+            </h4>
+
+            <!-- Botões de Ação Direta -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
+              <button id="btn-run-dijkstra" class="btn btn-primary" style="padding: 0.5rem; font-size: 0.82rem; justify-content: center; background: #0284c7;">
+                ⚡ Rota Dijkstra
+              </button>
+              <button id="btn-inject-leak" class="btn btn-outline" style="padding: 0.5rem; font-size: 0.82rem; justify-content: center; border-color: #ef4444; color: #fca5a5;">
+                🚨 Injetar Vazamento
+              </button>
+              <button id="btn-tsp" class="btn btn-outline" style="padding: 0.5rem; font-size: 0.82rem; justify-content: center; border-color: #f59e0b; color: #fde68a;">
+                🚜 Rota AGV (TSP)
+              </button>
+              <button id="btn-hierholzer" class="btn btn-outline" style="padding: 0.5rem; font-size: 0.82rem; justify-content: center; border-color: #c084fc; color: #e9d5ff;">
+                🔍 Inspeção Euler
+              </button>
+              <button id="btn-dag" class="btn btn-outline" style="padding: 0.5rem; font-size: 0.82rem; justify-content: center; border-color: #10b981; color: #6ee7b7;">
+                📦 Validar DAG
+              </button>
+              <button id="btn-reset-sim" class="btn btn-outline" style="padding: 0.5rem; font-size: 0.82rem; justify-content: center;">
+                🔄 Reset Geral
+              </button>
+            </div>
+
+            <!-- Telemetria & KPIs -->
+            <div style="background: #040d1a; border: 1px solid #1e3a5f; border-radius: 8px; padding: 0.85rem; margin-bottom: 1rem;">
+              <div style="font-size: 0.78rem; color: #94a3b8; font-family: var(--font-mono); margin-bottom: 0.35rem; font-weight: bold;">
+                INDICADORES OPERACIONAIS (KPIs EM TEMPO REAL):
+              </div>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem;">
+                <div>
+                  <small style="color: #64748b; font-size: 0.75rem; display: block;">Custo / Distância Total:</small>
+                  <strong id="kpi-distance" style="font-size: 1.15rem; color: #38bdf8; font-family: var(--font-mono);">0 m</strong>
+                </div>
+                <div>
+                  <small style="color: #64748b; font-size: 0.75rem; display: block;">Latência de Decisão:</small>
+                  <strong id="kpi-latency" style="font-size: 1.15rem; color: #10b981; font-family: var(--font-mono);">0.00 ms</strong>
+                </div>
+              </div>
+
+              <div style="margin-top: 0.6rem;">
+                <small style="color: #64748b; font-size: 0.75rem; display: block;">Vetor de Rota Ativo:</small>
+                <div id="kpi-route" style="font-family: var(--font-mono); font-size: 0.8rem; color: #e2e8f0; background: #0c1a2e; padding: 0.35rem 0.6rem; border-radius: 4px; margin-top: 2px; word-break: break-all;">
+                  Nenhuma rota ativa
+                </div>
+              </div>
+            </div>
+
+            <!-- Console Log SCADA -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <span style="font-size: 0.78rem; color: #94a3b8; font-family: var(--font-mono); font-weight: bold;">
+                  CONSOLE DE EVENTOS DO SUPERVISÓRIO:
+                </span>
+                <span style="font-size: 0.7rem; color: #10b981; font-family: var(--font-mono);">● REC</span>
+              </div>
+              <div id="scada-console-output" style="background: #020712; border: 1px solid #1e293b; border-radius: 6px; height: 160px; overflow-y: auto; padding: 0.6rem; font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.5; color: #cbd5e1;">
+                <!-- Linhas inseridas dinamicamente via JS -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================
+         3. MEMORIAL DESCRITIVO DAS AULAS 11 A 18
+         =================================================== -->
+    <section id="aulas-detalhadas" style="margin-top: 4rem; margin-bottom: 5rem;">
+      <div class="section-header">
+        <span class="section-tag" style="color: #10b981;">Memorial de Engenharia</span>
+        <h2 class="section-title">Documentação Completa das Aulas 11 a 18</h2>
+        <p class="section-subtitle">
+          Fundamentos matemáticos rigorosos, teoremas, formulações em álgebra linear matricial, pseudocódigos e conexões com a instrumentação real da planta química NPK.
+        </p>
+      </div>
+
+      <!-- AULA 11 -->
+      <article class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <span class="module-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+            Aula 11 • Modelagem
+          </span>
+          <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">Notebook: 11 - Modelagem da Tubulacao e Instrumentos como Grafo.ipynb</span>
+        </div>
+        <h3 class="card-title">Aula 11: Teoria dos Grafos — Modelagem de Tubulações e Instrumentos</h3>
+        <p class="card-description">
+          Formalização da infraestrutura física da fábrica através da definição de dígrafos ponderados $G = (V, E, W)$, distinção entre listas planas de equipamentos e topologias conectivas, graus de entrada e saída e prova do Lema do Aperto de Mãos Dirigido.
+        </p>
+        <div style="font-size: 0.92rem; color: var(--text-main); line-height: 1.7;">
+          <h4 style="color: #38bdf8; margin: 1rem 0 0.4rem;">1. Definição Formal do Dígrafo da Planta</h4>
+          <p>
+            Um <strong>Grafo Dirigido e Ponderado (Dígrafo)</strong> é formalmente definido pela tripla $G = (V, E, W)$, em que:
+          </p>
+          <ul style="padding-left: 1.25rem; margin-bottom: 1rem;">
+            <li>$V = \{v_1, \dots, v_n\}$ representa os <strong>vértices (nós)</strong> correspondentes a vasos de pressão, tanques de armazenamento (TK-301, TK-302, TK-303), bombas centrífugas (P-101, P-102), reatores (R-101), manifolds (MAN-101) e granuladores (GRAN-201).</li>
+            <li>$E \subseteq V \times V$ representa o conjunto de <strong>arestas dirigidas (arcos)</strong> formadas por segmentos físicos de tubulação com sentido de escoamento obrigatório.</li>
+            <li>$W: E \rightarrow \mathbb{R}^+$ representa a <strong>função de ponderação</strong>, que quantifica o custo de transporte em metros lineares de tubulação ou na perda de carga equivalente $\Delta P = f \frac{L}{D} \frac{\rho v^2}{2}$.</li>
+          </ul>
+
+          <h4 style="color: #38bdf8; margin: 1rem 0 0.4rem;">2. Lema do Aperto de Mãos Dirigido</h4>
+          <p>
+            Em qualquer dígrafo finito, a soma dos graus de saída deve ser identicamente igual à soma dos graus de entrada e ao número total de arestas:
+          </p>
+          $$\sum_{v \in V} \deg^+(v) = \sum_{v \in V} \deg^-(v) = |E|$$
+          <p>
+            Na rede industrial do projeto, contabilizamos 9 trechos de tubulação cadastrados. Somando as conexões de saída: $1(\text{TK-301}) + 1(\text{TK-302}) + 2(\text{MAN-101}) + 1(\text{P-101}) + 1(\text{P-102}) + 2(\text{R-101}) + 1(\text{TK-303}) + 0(\text{GRAN}) = 9$. Somando as entradas: $0 + 0 + 2 + 1 + 1 + 2 + 1 + 2 = 9$. Esta identidade comprova algebricamente que não há dutos órfãos ou inconsistências de cadastro no banco de dados do supervisório.
+          </p>
+        </div>
+      </article>
+
+      <!-- AULA 12 -->
+      <article class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <span class="module-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+            Aula 12 • Álgebra Linear
+          </span>
+          <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">Notebook: 12 - Matrizes de Incidencia Adjacencia e Custos.ipynb</span>
+        </div>
+        <h3 class="card-title">Aula 12: Matrizes de Incidência, Adjacência e Balanço de Massa Matricial</h3>
+        <p class="card-description">
+          Representação algébrica de redes industriais por matrizes de incidência $B$, prova da propriedade de soma nula por coluna, conservação de massa contínua expressa como sistema linear $B \cdot \vec{Q} = \vec{S}$, operador Laplaciano $L = B B^T$ e matriz de adjacência $A$.
+        </p>
+        <div style="font-size: 0.92rem; color: var(--text-main); line-height: 1.7;">
+          <h4 style="color: #38bdf8; margin: 1rem 0 0.4rem;">1. A Matriz de Incidência Vértice-Aresta ($B$)</h4>
+          <p>
+            Para um dígrafo com $n$ nós e $m$ arestas, $B \in \{-1, 0, +1\}^{n \times m}$ registra as conexões orientadas:
+          </p>
+          $$B[i, j] = \begin{cases} -1, & \text{se } e_j \text{ parte de } v_i \\ +1, & \text{se } e_j \text{ incide em } v_i \\ 0, & \text{caso contrário} \end{cases}$$
+          <p>
+            Como cada aresta possui exatamente uma origem ($-1$) e um destino ($+1$), a soma de qualquer coluna é identicamente nula: $\sum_{i=1}^n B[i, j] = 0$.
+          </p>
+
+          <h4 style="color: #38bdf8; margin: 1rem 0 0.4rem;">2. Balanço de Massa como Primeira Lei de Kirchhoff</h4>
+          <p>
+            A conservação de matéria em todos os equipamentos da fábrica é equacionada compactamente através do produto matriz-vetor:
+          </p>
+          $$B \cdot \vec{Q} = \vec{S}$$
+          <p>
+            Onde $\vec{Q} = [Q_1, Q_2, \dots, Q_m]^T$ é o vetor de vazões volumétricas instantâneas em cada duto ($\text{m}^3/\text{h}$) e $\vec{S} \in \mathbb{R}^n$ é o vetor de taxas líquidas de geração/consumo. Em qualquer equipamento intermediário (manifold, bomba, reator estável sem acúmulo), $\vec{S}[k] = 0$. As únicas entradas com valor diferente de zero são os nós de fronteira: os tanques de insumo (fontes com taxa líquida negativa) e os silos de expedição (sumidouros com taxa líquida positiva).
+          </p>
+
+          <h4 style="color: #38bdf8; margin: 1rem 0 0.4rem;">3. Matriz de Adjacência $A$ e Matriz de Custos $W$</h4>
+          <p>
+            Enquanto $B$ opera sobre o par nó-tubulação, a <strong>Matriz de Adjacência</strong> $A \in \{0, 1\}^{n \times n}$ conecta nós entre si. As potências inteiras $A^k$ fornecem exatamente o número de caminhos de comprimento $k$ entre quaisquer dois pontos. A <strong>Matriz de Custos</strong> $W \in (\mathbb{R}^+ \cup \{\infty\})^{n \times n}$ generaliza $A$ substituindo os 1s pelas extensões físicas dos dutos e os 0s por $\infty$, servindo como estrutura nativa para o algoritmo de Dijkstra.
+          </p>
+        </div>
+      </article>
+
+      <!-- AULA 13 -->
+      <article class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <span class="module-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+            Aula 13 • Algoritmos de Busca
+          </span>
+          <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">Notebook: 13 - Algoritmos de Busca BFS e DFS em Tubulacoes.ipynb</span>
+        </div>
+        <h3 class="card-title">Aula 13: Algoritmos de Varredura — BFS e DFS em Redes de Tubulação</h3>
+        <p class="card-description">
+          Exploração por camadas com Busca em Largura (BFS) via fila FIFO para rota com menos válvulas, Busca em Profundidade (DFS) com pilha LIFO para classificação de arestas e detecção de ciclos, e bloqueio dinâmico de nós em tempo linear $O(|V|+|E|)$.
+        </p>
+        <div style="font-size: 0.92rem; color: var(--text-main); line-height: 1.7;">
+          <div class="table-responsive">
+            <table>
+              <tr><th>Critério</th><th>Busca em Largura (BFS)</th><th>Busca em Profundidade (DFS)</th></tr>
+              <tr><td><strong>Estrutura de Dados</strong></td><td>Fila FIFO (*First-In, First-Out*)</td><td>Pilha LIFO (*Last-In, First-Out*) / Recursão</td></tr>
+              <tr><td><strong>Complexidade Temporal</strong></td><td>$O(|V| + |E|)$ linear</td><td>$O(|V| + |E|)$ linear</td></tr>
+              <tr><td><strong>Consumo de Memória</strong></td><td>$O(|V|)$ (fronteira de camada)</td><td>$O(\text{profundidade máxima})$</td></tr>
+              <tr><td><strong>Garantia de Mínimo</strong></td><td>Garante menor número de arestas/saltos</td><td>Não garante caminho mínimo</td></tr>
+              <tr><td><strong>Aplicação Industrial</strong></td><td>Rota com menor número de válvulas a manobrar</td><td>Identificação de rotas de contingência e ciclos de recirculação</td></tr>
+            </table>
+          </div>
+          <p style="margin-top: 1rem;">
+            Na operação de sistemas SCADA, a BFS é a escolha ideal quando o custo dominante de risco é a <strong>comutação de atuadores</strong>: abrir ou fechar uma válvula motorizada introduz estresse mecânico e probabilidade de travamento. Já a DFS é fundamental para verificar se a rede é um DAG ou se contém caminhos fechados de recirculação que poderiam acumular subprodutos indesejados.
+          </p>
+        </div>
+      </article>
+
+      <!-- AULA 14 -->
+      <article class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <span class="module-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+            Aula 14 • Otimização de Caminhos
+          </span>
+          <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">Notebook: 14 - Menor Caminho Dijkstra e Roteamento Dinamico.ipynb</span>
+        </div>
+        <h3 class="card-title">Aula 14: Menor Caminho — Algoritmo de Dijkstra e Roteamento Fluídico</h3>
+        <p class="card-description">
+          Algoritmo guloso de Dijkstra com Min-Heap binário $O((|V|+|E|)\log |V|)$, prova indutiva de corretude sob pesos não-negativos, relaxação de arestas e vetor de predecessores para automação de despacho hidráulico.
+        </p>
+        <div style="font-size: 0.92rem; color: var(--text-main); line-height: 1.7;">
+          <h4 style="color: #38bdf8; margin: 1rem 0 0.4rem;">1. O Mecanismo de Relaxação Gulosa</h4>
+          <p>
+            Dijkstra mantém um vetor de distâncias mínimas provisórias $d[v]$ e um conjunto de nós fechados $S$. A cada passo, extrai do Min-Heap o nó $u \notin S$ com o menor valor de $d[u]$, finaliza sua distância e relaxa todas as arestas de saída $(u, v) \in E$:
+          </p>
+          $$d[v] = \min(d[v], \, d[u] + W(u, v))$$
+          <h4 style="color: #38bdf8; margin: 1rem 0 0.4rem;">2. Aplicação na Redução do Consumo de Bombeamento</h4>
+          <p>
+            No Complexo NPK, cada metro de tubulação de 6 polegadas e cada curva impõem uma perda de carga por atrito que demanda potência elétrica contínua dos motores das bombas P-101 e P-102. Ao calcular a rota com menor soma de pesos $W$, o SCADA garante a <strong>operação com a menor perda de carga total</strong>, minimizando a cavitação e reduzindo o consumo de energia em megawatts-hora ao longo do ano fabril.
+          </p>
+        </div>
+      </article>
+
+      <!-- AULA 15 -->
+      <article class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <span class="module-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+            Aula 15 • Tolerância a Falhas
+          </span>
+          <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">Notebook: 15 - Simulacao de Vazamentos e Desvio Automatico.ipynb</span>
+        </div>
+        <h3 class="card-title">Aula 15: Simulação de Vazamentos e Desvio Automático em Malha Fechada</h3>
+        <p class="card-description">
+          Grafos dinâmicos variantes no tempo $G_t$, técnica de isolamento por reponderação $W(u, v) \leftarrow \infty$, identificação de pontes estruturais e nós de corte (Algoritmo de Tarjan), e exigências temporais de segurança funcional da norma IEC 61511.
+        </p>
+        <div style="font-size: 0.92rem; color: var(--text-main); line-height: 1.7;">
+          <h4 style="color: #38bdf8; margin: 1rem 0 0.4rem;">1. Reponderação Dinâmica vs. Mutação Estrutural</h4>
+          <p>
+            Em sistemas de controle de tempo real com memória restrita, realocar matrizes ou recriar estruturas de dados em momentos de emergência é uma prática de alto risco. A técnica de atribuir custo infinito $W(e) \leftarrow \infty$ à tubulação rompida permite ao motor algorítmico do SCADA <strong>isolar o trecho avariado instantaneamente</strong> sem recriar objetos na memória heap, garantindo que o recálculo via Dijkstra encontre uma rota alternativa em frações de milissegundo.
+          </p>
+
+          <h4 style="color: #38bdf8; margin: 1rem 0 0.4rem;">2. $k$-Aresta-Conectividade e Pontes</h4>
+          <p>
+            Uma aresta é definida como <strong>ponte</strong> se sua eliminação aumenta o número de componentes conexos da rede. Se um vazamento ocorre em uma ponte, nenhuma reponderação é capaz de salvar a continuidade da produção, exigindo trip imediato do reator (*Emergency Shutdown* - ESD). A presença de redundâncias de processo — como o duto auxiliar passando pelo tanque pulmão TK-303 — assegura que o trecho de transferência para o granulador possua <strong>2-aresta-conectividade</strong>, viabilizando o desvio contínuo sem parada da fábrica.
+          </p>
+        </div>
+      </article>
+
+      <!-- AULA 16 -->
+      <article class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <span class="module-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+            Aula 16 • Manutenção Preditiva
+          </span>
+          <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">Notebook: 16 - Problemas Eulerianos e Inspecao de Infraestrutura.ipynb</span>
+        </div>
+        <h3 class="card-title">Aula 16: Problemas Eulerianos e Inspeção Autônoma de Infraestrutura</h3>
+        <p class="card-description">
+          Teorema de Euler (1736), critérios de paridade de graus para trilhas e circuitos, Algoritmo de Hierholzer em $O(|E|)$ com pilha e remoção de arestas, e aplicação em robôs autônomos para inspeção de corrosão e integridade física de tubulações.
+        </p>
+        <div style="font-size: 0.92rem; color: var(--text-main); line-height: 1.7;">
+          <p>
+            A manutenção preditiva de linhas de amônia líquida e ácido fosfórico exige inspeções radiográficas e ultrassônicas periódicas por Ensaios Não Destrutivos (NDT) para prevenir vazamentos catastróficos. Enviar um robô inspetor (*pipeline crawler*) de forma empírica causaria repetições excessivas de dutos já avaliados, esgotando a bateria do equipamento.
+          </p>
+          <p>
+            O <strong>Algoritmo de Hierholzer</strong> resolve esse desafio calculando uma sequência de percurso que visita <strong>cada aresta da rede exatamente uma vez</strong> em complexidade estritamente linear $O(|E|)$. Nos nós onde a paridade de graus não é par, o modelo recorre à formulação do <em>Problema do Carteiro Chinês</em>, duplicando estrategicamente o menor conjunto de dutos para eulerizar a malha com o menor custo extra possível.
+          </p>
+        </div>
+      </article>
+
+      <!-- AULA 17 -->
+      <article class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <span class="module-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+            Aula 17 • Logística Interna
+          </span>
+          <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">Notebook: 17 - Problemas Hamiltonianos e Roteamento de AGV.ipynb</span>
+        </div>
+        <h3 class="card-title">Aula 17: Problemas Hamiltonianos e Roteamento Logístico de AGVs (TSP)</h3>
+        <p class="card-description">
+          Ciclos Hamiltonianos, complexidade NP-difícil do Caixeiro-Viajante (*Traveling Salesperson Problem*), heurística construtiva Nearest Neighbor $O(n^2)$ e refinamento por busca local 2-Opt $O(n^3)$ para eliminação de cruzamentos geométricos em rotas de AGV.
+        </p>
+        <div style="font-size: 0.92rem; color: var(--text-main); line-height: 1.7;">
+          <p>
+            Para recolher amostras de reagentes na Portaria, Galpão A, Moega, Reator e Galpão B e levá-las ao laboratório central, um Veículo Guiado Automaticamente (AGV) não precisa percorrer todos os dutos (como no caso euleriano); ele precisa visitar <strong>cada local de amostragem exatamente uma vez</strong> e retornar à estação de recarga.
+          </p>
+          <div class="grid-2" style="margin-top: 1rem;">
+            <div class="card" style="padding: 1rem;">
+              <strong style="color: #f59e0b;">Heurística do Vizinho Mais Próximo (NN):</strong>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
+                A cada etapa, o veículo seleciona o ponto não visitado mais próximo ($O(n^2)$). É rápida, mas comete erros conhecidos ao ser forçada a realizar saltos longos na etapa final.
+              </p>
+            </div>
+            <div class="card" style="padding: 1rem;">
+              <strong style="color: #10b981;">Refinamento com Busca Local 2-Opt:</strong>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
+                Remove dois arcos que se cruzam no plano fabril e inverte o segmento intermediário sempre que o custo diminuir. Na planta NPK do projeto, o 2-Opt reduz o percurso do AGV em até 15% a 25% em relação ao NN puro.
+              </p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- AULA 18 -->
+      <article class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <span class="module-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+            Aula 18 • Cadeia de Suprimentos
+          </span>
+          <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">Notebook: 18 - Grafos de Logistica de Insumos e Produtos Acabados.ipynb</span>
+        </div>
+        <h3 class="card-title">Aula 18: Grafos de Logística de Insumos, Processo e Produtos Acabados</h3>
+        <p class="card-description">
+          Modelagem em redes multicamada ($G_M$ materiais, $G_V$ veículos, $G_E$ estoques), caracterização do fluxo de processo como Grafo Acíclico Dirigido (DAG), algoritmo de ordenação topológica de Kahn $O(|V|+|E|)$ e auditoria de precedência industrial.
+        </p>
+        <div style="font-size: 0.92rem; color: var(--text-main); line-height: 1.7;">
+          <h4 style="color: #38bdf8; margin: 1rem 0 0.4rem;">1. Por que o Fluxo de Materiais é um DAG?</h4>
+          <p>
+            As transformações que convertem rocha fosfática, amônia, ureia e cloreto de potássio em grânulos de fertilizante NPK 10-10-10 são irreversíveis: a matéria-prima segue estritamente a sequência:
+          </p>
+          <div style="background: #091224; border: 1px solid #1e3a5f; padding: 0.75rem 1rem; border-radius: 6px; font-family: var(--font-mono); font-size: 0.85rem; color: #38bdf8; margin: 0.75rem 0;">
+            Portaria ➔ Galpão A ➔ Moega/Silos ➔ Reator R-101 ➔ Granulação/Secagem ➔ Ensaque Galpão B ➔ Docas de Expedição
+          </div>
+          <p>
+            A ausência de ciclos dirigidos permite aplicar o <strong>Algoritmo de Kahn</strong> para extrair a ordenação topológica dos ativos. Qualquer comando de operador ou sistema MES que tente descarregar um produto antes da etapa de dosagem ou granulação é bloqueado pelo supervisor com base na violação da ordenação topológica do DAG.
+          </p>
+
+          <h4 style="color: #38bdf8; margin: 1rem 0 0.4rem;">2. Redes Multicamadas e Segregação de Domínios</h4>
+          <p>
+            O erro mais comum na modelagem industrial é colapsar todas as conexões em um único grafo plano. A adoção de <strong>três camadas distintas ($G_M, G_V, G_E$)</strong> garante que as regras de circulação de empilhadeiras não se confundam com a perda de carga hidráulica dos dutos, nem com as regras de endereçamento do armazém de produtos acabados.
+          </p>
+        </div>
+      </article>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-bottom">
+      <p>© 2026.2 ECAA08 Automática • Engenharia de Controle e Automação • UNIFEI. Publicado no GitHub Pages.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+  <script src="js/etapa-02-simulator.js"></script>
+</body>
+</html>
