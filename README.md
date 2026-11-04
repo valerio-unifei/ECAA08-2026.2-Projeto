@@ -28,7 +28,7 @@ Desenvolver um motor computacional de supervisão, controle e diagnóstico para 
 
 * **Aula 01:** Kick-off & Arquitetura do SCADA — Apresentação do projeto, montagem dos grupos e escolha da planta química. 
   - *Entregável: Definição da Planta*.
----
+
 ### Módulo 1: Lógica Formal & Sistemas Especialistas
 
 * **Aula 02:** Representação Simbólica — Mapeamento de variáveis de processo (sensores/atuadores) em proposições. 
@@ -48,7 +48,7 @@ Desenvolver um motor computacional de supervisão, controle e diagnóstico para 
 * **Aula 09:** Motor de Inferência — Implementação de algoritmo de inferência (*Forward/Backward Chaining*). 
   - *Entregável: Integração do motor de diagnóstico*.
 * **Aula 10: Avaliação do Módulo 1 — Apresentação do Motor de Intertravamento e Diagnóstico.**
----
+
 ### Módulo 2: Teoria dos Grafos & Roteamento
 
 * **Aula 11:** Grafos: Definições — Modelagem da tubulação e instrumentos como Grafo Dirigido e Ponderado. 
@@ -66,40 +66,26 @@ Desenvolver um motor computacional de supervisão, controle e diagnóstico para 
 * **Aula 17:** Problemas Hamiltonianos (PCV) — Roteamento do AGV de amostragem química pelos tanques. 
   - *Entregável: Rota otimizada de amostragem*.
 * **Aula 18: Avaliação do Módulo 2 — Apresentação do Roteador Automático de Fluidos e Logística.**
----
-### Módulo 3: Árvores & Gestão de Alarmes (Aulas 19 a 28)
 
-* **Aula 19:** Árvores: Definições — Estruturação hierárquica das seções da fábrica no banco de dados. 
-  - *Entregável: Árvore de ativos da planta*.
-* **Aula 20:** Representação Binária — Implementação de Árvores Binárias de Busca (BST) para consulta de Tags. 
-  - *Entregável: Algoritmo de varredura $O(\log n)$*.
-* **Aula 21:** Algoritmos de Percurso — Varredura em Pré-Ordem, Em-Ordem e Pós-Ordem no banco de dados. 
-  - *Entregável: Módulo de ordenação de variáveis*.
-* **Aula 22:** Hierarquia de Alarmes — Mapeamento de dependência de alarmes para prevenir *Alarm Flood*. 
-  - *Entregável: Árvore de dependência de alertas*.
-* **Aula 23:** Algoritmo de Supressão — Filtragem de alarmes secundários causados por falhas raiz. 
-  - *Entregável: Filtro inteligente de alarmes*.
-* **Aula 24:** Priorização na IHM — Estruturação da exibição visual de alarmes críticos por severidade. 
-  - *Entregável: Interface de eventos do operador*.
-* **Aula 25:** Árvores de Decisão: Teoria — Mapeamento de variáveis críticas de processo em nós de decisão. 
-  - *Entregável: Modelo conceitual de Trip automático*.
-* **Aula 26:** Algoritmo de *Trip* — Programação do protocolo de paralisação de emergência (*Shutdown*). 
-  - *Entregável: Código do algoritmo de parada segura*.
-* **Aula 27:** Testes de Inundação — Injeção de 50 alarmes simultâneos e validação da supressão em tempo real. 
-  - *Entregável: Relatório de validação de estabilidade*.
-* **Aula 28: Avaliação do Módulo 3 — Apresentação do Gerenciador de Alarmes e Algoritmo de Parada Automática**
----
+### Módulo 3: Árvores
 
-### Módulo 4: Relações, Permissões e Defesa Final
+* **Aula 19:** Algoritmo de Kruskal e Prim
+* **Aula 20:** Codificação de Huffman
+* **Aula 21:** Árvores Binárias
+* **Aula 22:** Rapidly-exploring Random Trees
+* **Aula 23:** Protocolo de Árvore Geradora (STP / RSTP)
+* **Aula 24:** Árvore de Atingibilidade e Cobertura em Redes de Petri
+* **Aula 25:** Árvores de Comportamento
+* **Aula 26:** KD-Trees
+* **Aula 27:** Árvores de Decisão - Algoritmos Clássicos de Construção de Árvore
+* **Aula 28: Apresentação e simulação do módulo 3**
 
-* **Aula 29:** Relações: Propriedades — Definição da matriz de acessos e permissões de usuários no SCADA. 
-  - *Entregável: Matriz de Relações de Acesso*.
-* **Aula 30:** Ordem Parcial (Hasse) — Modelagem da hierarquia operacional (Operador < Supervisor < Engenheiro). 
-  - *Entregável: Diagrama de Hasse na IHM*.
-* **Aula 31:** Relações de Equivalência — Matriz de Transição de Estados (Grafcet/SFC) para processos batelada. 
-  - *Entregável: Código do sequenciador de etapas*.
-* **Aula 32: Defesa Final Integrada — Demonstração completa do SCADA-Core Automática operando a planta em tempo real**
+### Módulo 4: Relações
 
+* **Aula 29:** Ordenação Topológica (Relações de Ordem Parcial)
+* **Aula 30:** Algoritmo de Warshall (Fecho Transitivo) ou Hopcroft (Minimização de Autômatos)
+* **Aula 31:** Composição de Relações Fuzzy (Max-Min / Max-Produto)
+* **Aula 32: Apresentação e simulação do módulo 4**
 
 ## Entrega via GitHub
 
