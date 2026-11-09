@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Árvore de Decisão Interativa - Dataset Iris</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Smooth transitions */
+        .tree-node { transition: all 0.3s ease; }
+        .tree-node:hover { transform: scale(1.02); }
+        .node-highlight { stroke: #4f46e5; stroke-width: 3px; filter: drop-shadow(0 0 6px rgba(79, 70, 229, 0.6)); }
+        
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Navbar Header -->
+    <header class="bg-indigo-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="git-fork" class="w-7 h-7 transform rotate-180"></i>
+                <h1 class="text-xl font-bold tracking-tight">Iris Decision Tree Studio</h1>
+            </div>
+            <div class="text-xs bg-indigo-800 px-3 py-1.5 rounded-full font-medium text-indigo-200 border border-indigo-600">
+                Machine Learning Client-Side (Pure JS)
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Layout -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- LEFT PANEL: Hyperparameters & Model Training (4 cols) -->
+        <aside class="lg:col-span-4 space-y-6">
+            
+            <!-- Hyperparameter Tuning Box -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-5">
+                <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
+                    <i data-lucide="sliders" class="w-5 h-5 text-indigo-600"></i>
+                    <h2 class="font-semibold text-slate-800">Hiperparâmetros de Treino</h2>
+                </div>
+
+                <form id="train-form" onsubmit="event.preventDefault(); trainAndRender();" class="space-y-4">
+                    <!-- Max Depth -->
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <label class="font-medium text-slate-700">Profundidade Máxima (maxDepth)</label>
+                            <span id="val-maxDepth" class="font-bold text-indigo-600">4</span>
+                        </div>
+                        <input type="range" id="param-maxDepth" min="1" max="10" value="4" 
+                            class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                            oninput="document.getElementById('val-maxDepth').textContent=this.value">
+                    </div>
+
+                    <!-- Min Samples Split -->
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <label class="font-medium text-slate-700">Amostras Mínimas p/ Divisão</label>
+                            <span id="val-minSamples" class="font-bold text-indigo-600">2</span>
+                        </div>
+                        <input type="range" id="param-minSamples" min="2" max="20" value="2" 
+                            class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                            oninput="document.getElementById('val-minSamples').textContent=this.value">
+                    </div>
+
+                    <!-- Train / Test Split -->
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <label class="font-medium text-slate-700">Proporção do Dataset de Treino</label>
+                            <span id="val-trainRatio" class="font-bold text-indigo-600">70%</span>
+                        </div>
+                        <input type="range" id="param-trainRatio" min="50" max="90" step="5" value="70" 
+                            class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                            oninput="document.getElementById('val-trainRatio').textContent=this.value+'%'">
+                    </div>
+
+                    <!-- Criterion -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Critério de Impureza</label>
+                        <select id="param-criterion" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            <option value="gini" selected>Índice Gini (Gini Impurity)</option>
+                            <option value="entropy">Entropia (Ganho de Informação)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg shadow transition flex items-center justify-center space-x-2">
+                        <i data-lucide="play" class="w-4 h-4"></i>
+                        <span>Treinar Árvore de Decisão</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Model Performance Metrics -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+                <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5 text-indigo-600"></i>
+                    <h2 class="font-semibold text-slate-800">Métricas do Modelo</h2>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-center">
+                        <span class="text-xs text-emerald-600 uppercase font-bold tracking-wider">Acurácia Treino</span>
+                        <div id="metric-train-acc" class="text-2xl font-extrabold text-emerald-700">0.0%</div>
+                    </div>
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-3 text-center">
+                        <span class="text-xs text-indigo-600 uppercase font-bold tracking-wider">Acurácia Teste</span>
+                        <div id="metric-test-acc" class="text-2xl font-extrabold text-indigo-700">0.0%</div>
+                    </div>
+                </div>
+
+                <!-- Confusion Matrix -->
+                <div>
+                    <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Matriz de Confusão (Teste)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-center border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600">
+                                    <th class="p-1 border border-slate-200">Real \ Prev</th>
+                                    <th class="p-1 border border-slate-200 text-emerald-700">Setosa</th>
+                                    <th class="p-1 border border-slate-200 text-amber-700">Versic.</th>
+                                    <th class="p-1 border border-slate-200 text-purple-700">Virgin.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="confusion-matrix-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Inference Controls -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-indigo-600"></i>
+                        <h2 class="font-semibold text-slate-800">Testar Inferência</h2>
+                    </div>
+                </div>
+
+                <!-- Preset Buttons -->
+                <div class="flex space-x-2">
+                    <button onclick="setPreset([5.1, 3.5, 1.4, 0.2])" class="flex-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs py-1.5 rounded font-medium transition">Exemplo Setosa</button>
+                    <button onclick="setPreset([6.0, 2.9, 4.5, 1.5])" class="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs py-1.5 rounded font-medium transition">Exemplo Versicolor</button>
+                    <button onclick="setPreset([6.5, 3.0, 5.2, 2.0])" class="flex-1 bg-purple-100 hover:bg-purple-200 text-purple-800 text-xs py-1.5 rounded font-medium transition">Exemplo Virginica</button>
+                </div>
+
+                <!-- Feature Inputs -->
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex justify-between text-xs font-medium text-slate-600 mb-1">
+                            <span>Comprimento Sépala (cm)</span>
+                            <span id="val-f0" class="font-bold">5.1</span>
+                        </div>
+                        <input type="range" id="input-f0" min="4.0" max="8.0" step="0.1" value="5.1" class="w-full h-1.5 bg-slate-200 rounded appearance-none cursor-pointer accent-indigo-600" oninput="updateInference()">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-medium text-slate-600 mb-1">
+                            <span>Largura Sépala (cm)</span>
+                            <span id="val-f1" class="font-bold">3.5</span>
+                        </div>
+                        <input type="range" id="input-f1" min="2.0" max="4.5" step="0.1" value="3.5" class="w-full h-1.5 bg-slate-200 rounded appearance-none cursor-pointer accent-indigo-600" oninput="updateInference()">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-medium text-slate-600 mb-1">
+                            <span>Comprimento Pétala (cm)</span>
+                            <span id="val-f2" class="font-bold">1.4</span>
+                        </div>
+                        <input type="range" id="input-f2" min="1.0" max="7.0" step="0.1" value="1.4" class="w-full h-1.5 bg-slate-200 rounded appearance-none cursor-pointer accent-indigo-600" oninput="updateInference()">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-medium text-slate-600 mb-1">
+                            <span>Largura Pétala (cm)</span>
+                            <span id="val-f3" class="font-bold">0.2</span>
+                        </div>
+                        <input type="range" id="input-f3" min="0.1" max="2.5" step="0.1" value="0.2" class="w-full h-1.5 bg-slate-200 rounded appearance-none cursor-pointer accent-indigo-600" oninput="updateInference()">
+                    </div>
+                </div>
+
+                <!-- Prediction Display Result -->
+                <div id="prediction-result" class="p-4 rounded-xl border bg-slate-50 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Resultado da Predição</span>
+                        <div id="pred-class-name" class="text-xl font-bold text-slate-900">Iris-setosa</div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-500">Confiança</span>
+                        <div id="pred-confidence" class="text-lg font-bold text-indigo-600">100%</div>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- RIGHT PANEL: Visualizations (Tree & 2D Decision Plot) (8 cols) -->
+        <section class="lg:col-span-8 space-y-6">
+
+            <!-- Decision Tree Visualizer -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col h-[520px]">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-2">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="network" class="w-5 h-5 text-indigo-600"></i>
+                        <h2 class="font-semibold text-slate-800">Estrutura Visual da Árvore de Decisão</h2>
+                    </div>
+                    <span class="text-xs text-slate-400">Passe o mouse ou teste inferências para destacar o caminho</span>
+                </div>
+
+                <!-- SVG Tree Render Container -->
+                <div class="flex-1 w-full relative overflow-auto bg-slate-50/50 rounded-lg border border-slate-100" id="tree-container">
+                    <svg id="tree-svg" class="w-full h-full min-w-[700px] min-h-[440px]"></svg>
+                </div>
+            </div>
+
+            <!-- 2D Scatter Plot & Decision Boundary -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="scatter-chart" class="w-5 h-5 text-indigo-600"></i>
+                        <h2 class="font-semibold text-slate-800">Espaço de Decisão 2D (Comprimento vs Largura da Pétala)</h2>
+                    </div>
+                    <div class="flex space-x-3 text-xs">
+                        <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block mr-1"></span> Setosa</span>
+                        <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block mr-1"></span> Versicolor</span>
+                        <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-purple-500 inline-block mr-1"></span> Virginica</span>
+                    </div>
+                </div>
+
+                <div class="relative flex justify-center items-center bg-slate-50 rounded-lg p-2 border border-slate-100">
+                    <canvas id="canvas-2d" width="650" height="320" class="max-w-full rounded shadow-inner"></canvas>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        Iris Decision Tree Classifier Studio &bull; Desenvolvido totalmente em HTML5, CSS3 (Tailwind) e Vanilla JavaScript.
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // ==========================================
+        // 1. DATASET IRIS COMPLETO (150 Amostras)
+        // Features: [sepal_length, sepal_width, petal_length, petal_width]
+        // Target: 0 (Setosa), 1 (Versicolor), 2 (Virginica)
+        // ==========================================
+        const FEATURE_NAMES = ["Comprimento Sépala", "Largura Sépala", "Comprimento Pétala", "Largura Pétala"];
+        const CLASS_NAMES = ["Iris-setosa", "Iris-versicolor", "Iris-virginica"];
+        const CLASS_COLORS = ["#10b981", "#f59e0b", "#8b5cf6"]; // emerald, amber, purple
+
+        const RAW_DATASET = [
+            [5.1,3.5,1.4,0.2,0],[4.9,3.0,1.4,0.2,0],[4.7,3.2,1.3,0.2,0],[4.6,3.1,1.5,0.2,0],[5.0,3.6,1.4,0.2,0],[5.4,3.9,1.7,0.4,0],[4.6,3.4,1.4,0.3,0],[5.0,3.4,1.5,0.2,0],[4.4,2.9,1.4,0.2,0],[4.9,3.1,1.5,0.1,0],
+            [5.4,3.7,1.5,0.2,0],[4.8,3.4,1.6,0.2,0],[4.8,3.0,1.4,0.1,0],[4.3,3.0,1.1,0.1,0],[5.8,4.0,1.2,0.2,0],[5.7,4.4,1.5,0.4,0],[5.4,3.9,1.3,0.4,0],[5.1,3.5,1.4,0.3,0],[5.7,3.8,1.7,0.3,0],[5.1,3.8,1.5,0.3,0],
+            [5.4,3.4,1.7,0.2,0],[5.1,3.7,1.5,0.4,0],[4.6,3.6,1.0,0.2,0],[5.1,3.3,1.7,0.5,0],[4.8,3.4,1.9,0.2,0],[5.0,3.0,1.6,0.2,0],[5.0,3.4,1.6,0.4,0],[5.2,3.5,1.5,0.2,0],[5.2,3.4,1.4,0.2,0],[4.7,3.2,1.6,0.2,0],
+            [4.8,3.1,1.6,0.2,0],[5.4,3.4,1.5,0.4,0],[5.2,4.1,1.5,0.1,0],[5.5,4.2,1.4,0.2,0],[4.9,3.1,1.5,0.2,0],[5.0,3.2,1.2,0.2,0],[5.5,3.5,1.3,0.2,0],[4.9,3.6,1.4,0.1,0],[4.4,3.0,1.3,0.2,0],[5.1,3.4,1.5,0.2,0],
+            [5.0,3.5,1.3,0.3,0],[4.5,2.3,1.3,0.3,0],[4.4,3.2,1.3,0.2,0],[5.0,3.5,1.6,0.6,0],[5.1,3.8,1.9,0.4,0],[4.8,3.0,1.4,0.3,0],[5.1,3.8,1.6,0.2,0],[4.6,3.2,1.4,0.2,0],[5.3,3.7,1.5,0.2,0],[5.0,3.3,1.4,0.2,0],
+            [7.0,3.2,4.7,1.4,1],[6.4,3.2,4.5,1.5,1],[6.9,3.1,4.9,1.5,1],[5.5,2.3,4.0,1.3,1],[6.5,2.8,4.6,1.5,1],[5.7,2.8,4.5,1.3,1],[6.3,3.3,4.7,1.6,1],[4.9,2.4,3.3,1.0,1],[6.6,2.9,4.6,1.3,1],[5.2,2.7,3.9,1.4,1],
+            [5.0,2.0,3.5,1.0,1],[5.9,3.0,4.2,1.5,1],[6.0,2.2,4.0,1.0,1],[6.1,2.9,4.7,1.4,1],[5.6,2.9,3.6,1.3,1],[6.7,3.1,4.4,1.4,1],[5.6,3.0,4.5,1.5,1],[5.8,2.7,4.1,1.0,1],[6.2,2.2,4.5,1.5,1],[5.6,2.5,3.9,1.1,1],
+            [5.9,3.2,4.8,1.8,1],[6.1,2.8,4.0,1.3,1],[6.3,2.5,4.9,1.5,1],[6.1,2.8,4.7,1.2,1],[6.4,2.9,4.3,1.3,1],[6.6,3.0,4.4,1.4,1],[6.8,2.8,4.8,1.4,1],[6.7,3.0,5.0,1.7,1],[6.0,2.9,4.5,1.5,1],[5.7,2.6,3.5,1.0,1],
+            [5.5,2.4,3.8,1.1,1],[5.5,2.4,3.7,1.0,1],[5.8,2.7,3.9,1.2,1],[6.0,2.7,5.1,1.6,1],[5.4,3.0,4.5,1.5,1],[6.0,3.4,4.5,1.6,1],[6.7,3.1,4.7,1.5,1],[6.3,2.3,4.4,1.3,1],[5.6,3.0,4.1,1.3,1],[5.5,2.5,4.0,1.3,1],
+            [5.5,2.6,4.4,1.2,1],[6.1,3.0,4.6,1.4,1],[5.8,2.6,4.0,1.2,1],[5.0,2.3,3.3,1.0,1],[5.6,2.7,4.2,1.3,1],[5.7,3.0,4.2,1.2,1],[5.7,2.9,4.2,1.3,1],[6.2,2.9,4.3,1.3,1],[5.1,2.5,3.0,1.1,1],[5.7,2.8,4.1,1.3,1],
+            [6.3,3.3,6.0,2.5,2],[5.8,2.7,5.1,1.9,2],[7.1,3.0,5.9,2.1,2],[6.3,2.9,5.6,1.8,2],[6.5,3.0,5.8,2.2,2],[7.6,3.0,6.6,2.1,2],[4.9,2.5,4.5,1.7,2],[7.3,2.9,6.3,1.8,2],[6.7,2.5,5.8,1.8,2],[7.2,3.6,6.1,2.5,2],
+            [6.5,3.2,5.1,2.0,2],[6.4,2.7,5.3,1.9,2],[6.8,3.0,5.5,2.1,2],[5.7,2.5,5.0,2.0,2],[5.8,2.8,5.1,2.4,2],[6.4,3.2,5.3,2.3,2],[6.5,3.0,5.5,1.8,2],[7.7,3.8,6.7,2.2,2],[7.7,2.6,6.9,2.3,2],[6.0,2.2,5.0,1.5,2],
+            [6.9,3.2,5.7,2.3,2],[5.6,2.8,4.9,2.0,2],[7.7,2.8,6.7,2.0,2],[6.3,2.7,4.9,1.8,2],[6.7,3.3,5.7,2.1,2],[7.2,3.2,6.0,1.8,2],[6.2,2.8,4.8,1.8,2],[6.1,3.0,4.9,1.8,2],[6.4,2.8,5.6,2.1,2],[7.2,3.0,5.8,1.6,2],
+            [7.4,2.8,6.1,1.9,2],[7.9,3.8,6.4,2.0,2],[6.4,2.8,5.6,2.2,2],[6.3,2.8,5.1,1.5,2],[6.1,2.6,5.6,1.4,2],[7.7,3.0,6.1,2.3,2],[6.3,3.4,5.6,2.4,2],[6.4,3.1,5.5,1.8,2],[6.0,3.0,4.8,1.8,2],[6.9,3.1,5.4,2.1,2],
+            [6.7,3.1,5.6,2.4,2],[6.9,3.1,5.1,2.3,2],[5.8,2.7,5.1,1.9,2],[6.8,3.2,5.9,2.3,2],[6.7,3.3,5.7,2.5,2],[6.7,3.0,5.2,2.3,2],[6.3,2.5,5.0,1.9,2],[6.5,3.0,5.2,2.0,2],[6.2,3.4,5.4,2.3,2],[5.9,3.0,5.1,1.8,2]
+        ];
+
+        // ==========================================
+        // 2. DECISION TREE ALGORITHM FROM SCRATCH
+        // ==========================================
+        class TreeNode {
+            constructor(id, depth) {
+                this.id = id;
+                this.depth = depth;
+                this.isLeaf = false;
+                this.featureIndex = null;
+                this.threshold = null;
+                this.left = null;
+                this.right = null;
+                this.impurity = 0;
+                this.value = [0, 0, 0]; // Counts per class
+                this.prediction = null;
+                this.samples = 0;
+            }
+        }
+
+        class DecisionTreeClassifier {
+            constructor(maxDepth = 4, minSamplesSplit = 2, criterion = 'gini') {
+                this.maxDepth = maxDepth;
+                this.minSamplesSplit = minSamplesSplit;
+                this.criterion = criterion;
+                this.root = null;
+                this.nodeIdCounter = 0;
+            }
+
+            // Calculate Impurity (Gini or Entropy)
+            calculateImpurity(y) {
+                if (y.length === 0) return 0;
+                const counts = [0, 0, 0];
+                y.forEach(val => counts[val]++);
+
+                if (this.criterion === 'gini') {
+                    let gini = 1.0;
+                    for (let c of counts) {
+                        let p = c / y.length;
+                        gini -= p * p;
+                    }
+                    return gini;
+                } else { // Entropy
+                    let entropy = 0.0;
+                    for (let c of counts) {
+                        if (c > 0) {
+                            let p = c / y.length;
+                            entropy -= p * Math.log2(p);
+                        }
+                    }
+                    return entropy;
+                }
+            }
+
+            // Find best feature and split point
+            findBestSplit(X, y) {
+                let bestGain = -1;
+                let bestFeature = null;
+                let bestThreshold = null;
+
+                const parentImpurity = this.calculateImpurity(y);
+                const nSamples = X.length;
+                const nFeatures = X[0].length;
+
+                for (let f = 0; f < nFeatures; f++) {
+                    // Extract unique sorted values for thresholds
+                    const featureVals = X.map(row => row[f]);
+                    const uniqueVals = Array.from(new Set(featureVals)).sort((a, b) => a - b);
+
+                    for (let i = 0; i < uniqueVals.length - 1; i++) {
+                        const threshold = (uniqueVals[i] + uniqueVals[i + 1]) / 2;
+
+                        // Split data
+                        const leftY = [];
+                        const rightY = [];
+                        for (let j = 0; j < nSamples; j++) {
+                            if (X[j][f] <= threshold) leftY.push(y[j]);
+                            else rightY.push(y[j]);
+                        }
+
+                        if (leftY.length === 0 || rightY.length === 0) continue;
+
+                        // Calculate Gain
+                        const leftImpurity = this.calculateImpurity(leftY);
+                        const rightImpurity = this.calculateImpurity(rightY);
+                        const weightedChildImpurity = (leftY.length / nSamples) * leftImpurity + (rightY.length / nSamples) * rightImpurity;
+                        const gain = parentImpurity - weightedChildImpurity;
+
+                        if (gain > bestGain) {
+                            bestGain = gain;
+                            bestFeature = f;
+                            bestThreshold = threshold;
+                        }
+                    }
+                }
+
+                return { bestFeature, bestThreshold, bestGain };
+            }
+
+            // Recursive Tree Building
+            buildTree(X, y, depth = 0) {
+                const node = new TreeNode(this.nodeIdCounter++, depth);
+                node.samples = y.length;
+
+                // Count class frequencies
+                y.forEach(val => node.value[val]++);
+                node.impurity = this.calculateImpurity(y);
+                
+                // Majority prediction
+                node.prediction = node.value.indexOf(Math.max(...node.value));
+
+                // Stopping Conditions
+                const isPure = node.impurity === 0;
+                const reachedMaxDepth = depth >= this.maxDepth;
+                const tooFewSamples = X.length < this.minSamplesSplit;
+
+                if (isPure || reachedMaxDepth || tooFewSamples) {
+                    node.isLeaf = true;
+                    return node;
+                }
+
+                const { bestFeature, bestThreshold, bestGain } = this.findBestSplit(X, y);
+
+                if (bestGain <= 0 || bestFeature === null) {
+                    node.isLeaf = true;
+                    return node;
+                }
+
+                node.featureIndex = bestFeature;
+                node.threshold = bestThreshold;
+
+                // Partition data for left and right children
+                const leftX = [], leftY = [], rightX = [], rightY = [];
+                for (let i = 0; i < X.length; i++) {
+                    if (X[i][bestFeature] <= bestThreshold) {
+                        leftX.push(X[i]);
+                        leftY.push(y[i]);
+                    } else {
+                        rightX.push(X[i]);
+                        rightY.push(y[i]);
+                    }
+                }
+
+                node.left = this.buildTree(leftX, leftY, depth + 1);
+                node.right = this.buildTree(rightX, rightY, depth + 1);
+
+                return node;
+            }
+
+            fit(X, y) {
+                this.nodeIdCounter = 0;
+                this.root = this.buildTree(X, y, 0);
+            }
+
+            predictSample(sample, node = this.root, activePath = []) {
+                activePath.push(node.id);
+
+                if (node.isLeaf) {
+                    const total = node.samples;
+                    const probs = node.value.map(v => total > 0 ? (v / total) : 0);
+                    return { prediction: node.prediction, probabilities: probs, activePath };
+                }
+
+                if (sample[node.featureIndex] <= node.threshold) {
+                    return this.predictSample(sample, node.left, activePath);
+                } else {
+                    return this.predictSample(sample, node.right, activePath);
+                }
+            }
+        }
+
+        // ==========================================
+        // 3. GLOBAL STATE & HELPERS
+        // ==========================================
+        let currentModel = null;
+        let trainData = { X: [], y: [] };
+        let testData = { X: [], y: [] };
+        let currentActivePath = [];
+
+        // Shuffle dataset deterministically with seed or standard random
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function getParams() {
+            return {
+                maxDepth: parseInt(document.getElementById('param-maxDepth').value),
+                minSamplesSplit: parseInt(document.getElementById('param-minSamples').value),
+                trainRatio: parseInt(document.getElementById('param-trainRatio').value) / 100,
+                criterion: document.getElementById('param-criterion').value
+            };
+        }
+
+        // ==========================================
+        // 4. MAIN CONTROLLER & RE-TRAINING
+        // ==========================================
+        function trainAndRender() {
+            const params = getParams();
+            const shuffled = shuffleArray(RAW_DATASET);
+            const trainSize = Math.floor(shuffled.length * params.trainRatio);
+
+            trainData.X = shuffled.slice(0, trainSize).map(r => r.slice(0, 4));
+            trainData.y = shuffled.slice(0, trainSize).map(r => r[4]);
+
+            testData.X = shuffled.slice(trainSize).map(r => r.slice(0, 4));
+            testData.y = shuffled.slice(trainSize).map(r => r[4]);
+
+            // Fit Tree
+            currentModel = new DecisionTreeClassifier(params.maxDepth, params.minSamplesSplit, params.criterion);
+            currentModel.fit(trainData.X, trainData.y);
+
+            // Compute Accuracy & Metrics
+            evaluateModel();
+
+            // Render Visualization Tree SVG
+            renderTreeSVG(currentModel.root);
+
+            // Render Decision Boundary 2D Canvas
+            renderDecisionBoundary2D();
+
+            // Run initial Inference test
+            updateInference();
+        }
+
+        function evaluateModel() {
+            // Train Accuracy
+            let correctTrain = 0;
+            trainData.X.forEach((x, idx) => {
+                const res = currentModel.predictSample(x);
+                if (res.prediction === trainData.y[idx]) correctTrain++;
+            });
+            const trainAcc = ((correctTrain / trainData.X.length) * 100).toFixed(1);
+            document.getElementById('metric-train-acc').textContent = trainAcc + '%';
+
+            // Test Accuracy & Confusion Matrix
+            let correctTest = 0;
+            const matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]; // [Actual][Predicted]
+
+            testData.X.forEach((x, idx) => {
+                const actual = testData.y[idx];
+                const res = currentModel.predictSample(x);
+                const pred = res.prediction;
+
+                if (pred === actual) correctTest++;
+                matrix[actual][pred]++;
+            });
+
+            const testAcc = ((correctTest / testData.X.length) * 100).toFixed(1);
+            document.getElementById('metric-test-acc').textContent = testAcc + '%';
+
+            // Render Confusion Matrix Table
+            const tbody = document.getElementById('confusion-matrix-body');
+            tbody.innerHTML = '';
+            for (let r = 0; r < 3; r++) {
+                let tr = document.createElement('tr');
+                tr.className = 'border-b border-slate-100';
+                let tdLabel = `<td class="p-1 font-semibold text-slate-600 border border-slate-200">${CLASS_NAMES[r].replace('Iris-', '')}</td>`;
+                tr.innerHTML = tdLabel;
+
+                for (let c = 0; c < 3; c++) {
+                    const isDiagonal = r === c;
+                    const cellBg = isDiagonal ? 'bg-indigo-50 font-bold text-indigo-700' : (matrix[r][c] > 0 ? 'bg-red-50 text-red-600 font-semibold' : 'text-slate-400');
+                    tr.innerHTML += `<td class="p-1 border border-slate-200 ${cellBg}">${matrix[r][c]}</td>`;
+                }
+                tbody.appendChild(tr);
+            }
+        }
+
+        // ==========================================
+        // 5. SVG TREE RENDERER & INTERACTION
+        // ==========================================
+        function renderTreeSVG(rootNode) {
+            const svg = document.getElementById('tree-svg');
+            svg.innerHTML = ''; // Clear existing
+
+            // Compute hierarchy coordinates (X, Y) layout
+            const nodeWidth = 140;
+            const nodeHeight = 62;
+            const levelGap = 75;
+
+            // First pass: determine tree breadth/positions
+            let maxLeafX = 0;
+
+            function layoutNode(node, depth = 0, leftBoundary = 0) {
+                if (!node) return null;
+
+                const nodeObj = { node, depth, x: 0, y: depth * levelGap + 40, left: null, right: null };
+
+                if (node.isLeaf) {
+                    nodeObj.x = leftBoundary + nodeWidth / 2;
+                    maxLeafX = Math.max(maxLeafX, leftBoundary + nodeWidth + 20);
+                    return nodeObj;
+                }
+
+                const leftTree = layoutNode(node.left, depth + 1, leftBoundary);
+                const rightTree = layoutNode(node.right, depth + 1, leftTree ? maxLeafX : leftBoundary);
+
+                nodeObj.left = leftTree;
+                nodeObj.right = rightTree;
+                nodeObj.x = (leftTree.x + rightTree.x) / 2;
+
+                return nodeObj;
+            }
+
+            const treeLayout = layoutNode(rootNode, 0, 20);
+
+            // Set SVG size dynamically based on layout
+            const requiredWidth = Math.max(700, maxLeafX + 40);
+            const requiredHeight = Math.max(420, (getParams().maxDepth + 1) * levelGap + 60);
+            svg.setAttribute('width', requiredWidth);
+            svg.setAttribute('height', requiredHeight);
+            svg.setAttribute('viewBox', `0 0 ${requiredWidth} ${requiredHeight}`);
+
+            // Draw Connections (Lines) first
+            function drawConnections(layoutObj) {
+                if (!layoutObj) return;
+
+                if (layoutObj.left) {
+                    drawLine(svg, layoutObj.x, layoutObj.y + nodeHeight / 2, layoutObj.left.x, layoutObj.left.y - nodeHeight / 2, layoutObj.node.id, layoutObj.left.node.id);
+                    drawConnections(layoutObj.left);
+                }
+                if (layoutObj.right) {
+                    drawLine(svg, layoutObj.x, layoutObj.y + nodeHeight / 2, layoutObj.right.x, layoutObj.right.y - nodeHeight / 2, layoutObj.node.id, layoutObj.right.node.id);
+                    drawConnections(layoutObj.right);
+                }
+            }
+
+            // Draw Nodes
+            function drawNodes(layoutObj) {
+                if (!layoutObj) return;
+
+                createSVGNode(svg, layoutObj, nodeWidth, nodeHeight);
+
+                drawNodes(layoutObj.left);
+                drawNodes(layoutObj.right);
+            }
+
+            drawConnections(treeLayout);
+            drawNodes(treeLayout);
+
+            // Re-highlight current active path if present
+            highlightActivePath(currentActivePath);
+        }
+
+        function drawLine(svg, x1, y1, x2, y2, fromId, toId) {
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", x1);
+            line.setAttribute("y1", y1);
+            line.setAttribute("x2", x2);
+            line.setAttribute("y2", y2);
+            line.setAttribute("stroke", "#cbd5e1");
+            line.setAttribute("stroke-width", "2");
+            line.setAttribute("data-connection", `${fromId}->${toId}`);
+            svg.appendChild(line);
+        }
+
+        function createSVGNode(svg, layoutObj, w, h) {
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            g.setAttribute("transform", `translate(${layoutObj.x - w / 2}, ${layoutObj.y - h / 2})`);
+            g.setAttribute("class", "tree-node cursor-pointer");
+            g.setAttribute("data-node-id", layoutObj.node.id);
+
+            // Node Background Card
+            const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            rect.setAttribute("width", w);
+            rect.setAttribute("height", h);
+            rect.setAttribute("rx", "8");
+            rect.setAttribute("ry", "8");
+            
+            // Highlight color border based on leaf or internal node
+            if (layoutObj.node.isLeaf) {
+                rect.setAttribute("fill", "#ffffff");
+                rect.setAttribute("stroke", CLASS_COLORS[layoutObj.node.prediction]);
+                rect.setAttribute("stroke-width", "2.5");
+            } else {
+                rect.setAttribute("fill", "#ffffff");
+                rect.setAttribute("stroke", "#64748b");
+                rect.setAttribute("stroke-width", "1.5");
+            }
+            rect.setAttribute("class", "node-rect shadow-sm");
+            g.appendChild(rect);
+
+            // Title / Split Rule Header
+            const textHeader = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            textHeader.setAttribute("x", w / 2);
+            textHeader.setAttribute("y", "18");
+            textHeader.setAttribute("text-anchor", "middle");
+            textHeader.setAttribute("font-size", "11");
+            textHeader.setAttribute("font-weight", "600");
+            textHeader.setAttribute("fill", "#1e293b");
+
+            if (layoutObj.node.isLeaf) {
+                textHeader.textContent = CLASS_NAMES[layoutObj.node.prediction];
+                textHeader.setAttribute("fill", CLASS_COLORS[layoutObj.node.prediction]);
+            } else {
+                const featName = FEATURE_NAMES[layoutObj.node.featureIndex].replace('Comprimento', 'Comp.').replace('Largura', 'Larg.');
+                textHeader.textContent = `${featName} ≤ ${layoutObj.node.threshold.toFixed(2)}`;
+            }
+            g.appendChild(textHeader);
+
+            // Subtitle Details (Impurity & Samples)
+            const textSub = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            textSub.setAttribute("x", w / 2);
+            textSub.setAttribute("y", "34");
+            textSub.setAttribute("text-anchor", "middle");
+            textSub.setAttribute("font-size", "9.5");
+            textSub.setAttribute("fill", "#64748b");
+            const criterionLabel = getParams().criterion === 'gini' ? 'gini' : 'ent';
+            textSub.textContent = `${criterionLabel} = ${layoutObj.node.impurity.toFixed(2)} | n = ${layoutObj.node.samples}`;
+            g.appendChild(textSub);
+
+            // Class Distribution Bar at bottom of node
+            const total = layoutObj.node.samples;
+            if (total > 0) {
+                const barY = h - 12;
+                const barWidth = w - 16;
+                let currentX = 8;
+
+                layoutObj.node.value.forEach((cnt, idx) => {
+                    if (cnt > 0) {
+                        const segW = (cnt / total) * barWidth;
+                        const seg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                        seg.setAttribute("x", currentX);
+                        seg.setAttribute("y", barY);
+                        seg.setAttribute("width", segW);
+                        seg.setAttribute("height", "5");
+                        seg.setAttribute("rx", "1.5");
+                        seg.setAttribute("fill", CLASS_COLORS[idx]);
+                        g.appendChild(seg);
+                        currentX += segW;
+                    }
+                });
+            }
+
+            svg.appendChild(g);
+        }
+
+        function highlightActivePath(activePathIds) {
+            currentActivePath = activePathIds;
+
+            // Reset all nodes
+            document.querySelectorAll('.node-rect').forEach(rect => {
+                rect.classList.remove('node-highlight');
+            });
+            document.querySelectorAll('line[data-connection]').forEach(line => {
+                line.setAttribute("stroke", "#cbd5e1");
+                line.setAttribute("stroke-width", "2");
+            });
+
+            if (!activePathIds || activePathIds.length === 0) return;
+
+            // Highlight nodes
+            activePathIds.forEach(id => {
+                const g = document.querySelector(`g[data-node-id="${id}"] .node-rect`);
+                if (g) g.classList.add('node-highlight');
+            });
+
+            // Highlight connecting lines
+            for (let i = 0; i < activePathIds.length - 1; i++) {
+                const from = activePathIds[i];
+                const to = activePathIds[i + 1];
+                const line = document.querySelector(`line[data-connection="${from}->${to}"]`);
+                if (line) {
+                    line.setAttribute("stroke", "#4f46e5");
+                    line.setAttribute("stroke-width", "3.5");
+                }
+            }
+        }
+
+        // ==========================================
+        // 6. INFERENCE & PRESETS CONTROLLER
+        // ==========================================
+        function getInferenceInputs() {
+            return [
+                parseFloat(document.getElementById('input-f0').value),
+                parseFloat(document.getElementById('input-f1').value),
+                parseFloat(document.getElementById('input-f2').value),
+                parseFloat(document.getElementById('input-f3').value)
+            ];
+        }
+
+        function setPreset(vals) {
+            document.getElementById('input-f0').value = vals[0];
+            document.getElementById('input-f1').value = vals[1];
+            document.getElementById('input-f2').value = vals[2];
+            document.getElementById('input-f3').value = vals[3];
+            updateInference();
+        }
+
+        function updateInference() {
+            const sample = getInferenceInputs();
+
+            // Update UI Labels
+            document.getElementById('val-f0').textContent = sample[0].toFixed(1);
+            document.getElementById('val-f1').textContent = sample[1].toFixed(1);
+            document.getElementById('val-f2').textContent = sample[2].toFixed(1);
+            document.getElementById('val-f3').textContent = sample[3].toFixed(1);
+
+            if (!currentModel) return;
+
+            // Perform Prediction
+            const result = currentModel.predictSample(sample);
+            const predictedClass = CLASS_NAMES[result.prediction];
+            const confidence = (result.probabilities[result.prediction] * 100).toFixed(0);
+
+            // Update Result UI Card
+            const resContainer = document.getElementById('prediction-result');
+            const classNameEl = document.getElementById('pred-class-name');
+            const confEl = document.getElementById('pred-confidence');
+
+            classNameEl.textContent = predictedClass;
+            classNameEl.style.color = CLASS_COLORS[result.prediction];
+            confEl.textContent = `${confidence}%`;
+
+            // Highlight path in tree
+            highlightActivePath(result.activePath);
+
+            // Re-render 2D Canvas point location
+            renderDecisionBoundary2D(sample);
+        }
+
+        // ==========================================
+        // 7. 2D SCATTER PLOT & BOUNDARY CANVAS
+        // Features: Petal Length (idx 2) vs Petal Width (idx 3)
+        // ==========================================
+        function renderDecisionBoundary2D(currentSample = null) {
+            const canvas = document.getElementById('canvas-2d');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Petal Length range: 0.8 to 7.2
+            // Petal Width range: 0.0 to 2.7
+            const minX = 0.8, maxX = 7.2;
+            const minY = 0.0, maxY = 2.7;
+
+            function toCanvasX(x) { return ((x - minX) / (maxX - minX)) * width; }
+            function toCanvasY(y) { return height - (((y - minY) / (maxY - minY)) * height); }
+
+            // 1. Draw Decision Regions (Grid resolution)
+            const stepX = (maxX - minX) / 80;
+            const stepY = (maxY - minY) / 50;
+
+            // Mean values for Sepal length/width for background prediction
+            const meanF0 = 5.84;
+            const meanF1 = 3.05;
+
+            for (let x = minX; x <= maxX; x += stepX) {
+                for (let y = minY; y <= maxY; y += stepY) {
+                    const testSample = [meanF0, meanF1, x, y];
+                    const pred = currentModel.predictSample(testSample).prediction;
+
+                    ctx.fillStyle = CLASS_COLORS[pred] + '25'; // Light opacity background
+                    const cx = toCanvasX(x);
+                    const cy = toCanvasY(y + stepY);
+                    const cw = toCanvasX(x + stepX) - cx;
+                    const ch = toCanvasY(y) - cy;
+                    ctx.fillRect(cx, cy, cw + 0.5, ch + 0.5);
+                }
+            }
+
+            // 2. Plot Dataset Training/Test Points
+            const allPoints = [...trainData.X.map((x, i) => ({ x: x, y: trainData.y[i] })),
+                               ...testData.X.map((x, i) => ({ x: x, y: testData.y[i] }))];
+
+            allPoints.forEach(pt => {
+                const px = toCanvasX(pt.x[2]);
+                const py = toCanvasY(pt.x[3]);
+
+                ctx.beginPath();
+                ctx.arc(px, py, 4, 0, 2 * Math.PI);
+                ctx.fillStyle = CLASS_COLORS[pt.y];
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+
+            // 3. Highlight Current Inference Point if active
+            if (currentSample) {
+                const curX = toCanvasX(currentSample[2]);
+                const curY = toCanvasY(currentSample[3]);
+
+                // Pulsing outer halo
+                ctx.beginPath();
+                ctx.arc(curX, curY, 10, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(79, 70, 229, 0.3)';
+                ctx.fill();
+
+                // Core crosshair
+                ctx.beginPath();
+                ctx.arc(curX, curY, 6, 0, 2 * Math.PI);
+                ctx.fillStyle = '#4f46e5';
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            // Axis Labels
+            ctx.fillStyle = '#64748b';
+            ctx.font = '10px Inter';
+            ctx.fillText('Comprimento Pétala (cm) →', width - 140, height - 8);
+            ctx.save();
+            ctx.translate(12, 110);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Largura Pétala (cm) →', 0, 0);
+            ctx.restore();
+        }
+
+        // Initialize icons and application state on load
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            trainAndRender();
+        });
+    </script>
+</body>
+</html>
