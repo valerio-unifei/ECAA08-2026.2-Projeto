@@ -237,8 +237,11 @@
           <button onclick="zoomCanvas(0.85)" title="Diminuir Zoom" class="w-8 h-8 rounded-lg hover:bg-slate-800 flex items-center justify-center text-slate-300 hover:text-white transition-all">
             <i class="fa-solid fa-magnifying-glass-minus"></i>
           </button>
-          <button onclick="resetCamera()" title="Centralizar Árvore" class="w-8 h-8 rounded-lg hover:bg-slate-800 flex items-center justify-center text-slate-300 hover:text-white transition-all">
-            <i class="fa-solid fa-compress"></i>
+          <button onclick="fitToScreen()" title="Ajustar à Tela" class="w-8 h-8 rounded-lg hover:bg-slate-800 flex items-center justify-center text-slate-300 hover:text-white transition-all">
+            <i class="fa-solid fa-expand"></i>
+          </button>
+          <button onclick="resetCamera()" title="Resetar Vista (100%)" class="w-8 h-8 rounded-lg hover:bg-slate-800 flex items-center justify-center text-slate-300 hover:text-white transition-all">
+            <i class="fa-solid fa-rotate-left"></i>
           </button>
         </div>
       </div>
@@ -747,39 +750,53 @@
     }
 
     /* ==========================================================================
-       TREE LAYOUT ALGORITHM (COORDINATE CALCULATION)
+       TREE LAYOUT ALGORITHM (NO-OVERLAP IN-ORDER CALCULATOR)
        ========================================================================== */
 
     function updateLayout() {
       if (!root) return;
 
-      const canvas = document.getElementById('treeCanvas');
-      const startY = 80;
-      const levelHeight = 70;
+      let index = 0;
+      const minNodeSpacing = 58;
+      const levelHeight = 72;
+      const startY = 70;
 
-      // Recursive position calculation based on subtree widths
-      function assignPositions(node, depth, leftBound, rightBound) {
+      // 1. Assign in-order indices for collision-free horizontal distribution
+      function assignInOrderIndices(node, depth) {
+        if (!node) return;
+        assignInOrderIndices(node.left, depth + 1);
+        node.inOrderIdx = index++;
+        node.depth = depth;
+        assignInOrderIndices(node.right, depth + 1);
+      }
+      assignInOrderIndices(root, 0);
+
+      // 2. Compute Target Coordinates & center parents over children
+      function computeTargetCoords(node) {
         if (!node) return;
 
-        let x = (leftBound + rightBound) / 2;
-        let y = startY + depth * levelHeight;
+        computeTargetCoords(node.left);
+        computeTargetCoords(node.right);
 
-        node.targetX = x;
-        node.targetY = y;
+        const rawX = node.inOrderIdx * minNodeSpacing;
 
-        // Initialize x, y if new node
-        if (node.x === 0 && node.y === 0) {
-          node.x = x;
-          node.y = y;
+        // If node has both children, center it directly between them
+        if (node.left && node.right) {
+          node.targetX = (node.left.targetX + node.right.targetX) / 2;
+        } else {
+          node.targetX = rawX;
         }
 
-        assignPositions(node.left, depth + 1, leftBound, x);
-        assignPositions(node.right, depth + 1, x, rightBound);
+        node.targetY = startY + node.depth * levelHeight;
+
+        // Initialize position on creation
+        if (node.x === 0 && node.y === 0) {
+          node.x = node.targetX;
+          node.y = node.targetY;
+        }
       }
 
-      // Initial canvas width space
-      const treeWidth = Math.max(canvas.width, 1000);
-      assignPositions(root, 0, 0, treeWidth);
+      computeTargetCoords(root);
     }
 
     function resetNodeStates(node) {
@@ -790,25 +807,44 @@
     }
 
     /* ==========================================================================
-       CANVAS RENDERING ENGINE (WITH LERP ANIMATION & HIGH DPI)
+       CANVAS RENDERING ENGINE (WITH HIGH-DPI/RETINA CRISP SCALING)
        ========================================================================== */
 
     const canvas = document.getElementById('treeCanvas');
     const ctx = canvas.getContext('2d');
+    let dpr = window.devicePixelRatio || 1;
 
     function resizeCanvas() {
       const wrapper = document.getElementById('canvasWrapper');
-      canvas.width = wrapper.clientWidth;
-      canvas.height = wrapper.clientHeight;
+      dpr = window.devicePixelRatio || 1;
+      
+      const width = wrapper.clientWidth;
+      const height = wrapper.clientHeight;
+
+      // Set canvas physical buffer to device pixel ratio for crisp rendering
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+
+      // Scale down CSS size to fit container
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
       updateLayout();
     }
     window.addEventListener('resize', resizeCanvas);
 
     function render() {
+      const logicalWidth = canvas.width / dpr;
+      const logicalHeight = canvas.height / dpr;
+
       ctx.save();
+      // Clear physical canvas buffer
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Apply Pan & Zoom
+      // Apply high-DPI scaling
+      ctx.scale(dpr, dpr);
+
+      // Apply Pan & Zoom transformations
       ctx.translate(panX, panY);
       ctx.scale(zoom, zoom);
 
@@ -823,9 +859,9 @@
         ctx.fillStyle = '#334155';
         ctx.font = '500 16px Inter';
         ctx.textAlign = 'center';
-        ctx.fillText('Nenhum nó inserido na árvore', canvas.width / 2, canvas.height / 2);
+        ctx.fillText('Nenhum nó inserido na árvore', logicalWidth / 2, logicalHeight / 2);
         ctx.font = '400 12px Inter';
-        ctx.fillText('Utilize o painel lateral para adicionar elementos aleatórios ou manuais.', canvas.width / 2, canvas.height / 2 + 24);
+        ctx.fillText('Utilize o painel lateral para adicionar elementos aleatórios ou manuais.', logicalWidth / 2, logicalHeight / 2 + 24);
         ctx.restore();
       }
 
@@ -990,7 +1026,7 @@
     }
 
     /* ==========================================================================
-       PAN & ZOOM CANVAS CONTROLS
+       PAN & ZOOM CANVAS CONTROLS (FIT TO SCREEN & RESET)
        ========================================================================== */
 
     const wrapper = document.getElementById('canvasWrapper');
@@ -1015,18 +1051,71 @@
       e.preventDefault();
       const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
       zoomCanvas(zoomFactor);
-    });
+    }, { passive: false });
 
     function zoomCanvas(factor) {
       zoom *= factor;
-      zoom = Math.min(Math.max(0.4, zoom), 2.5);
+      zoom = Math.min(Math.max(0.2, zoom), 3.0);
+    }
+
+    function getTreeBoundingBox(node, bounds = { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity }) {
+      if (!node) return bounds;
+      bounds.minX = Math.min(bounds.minX, node.targetX - 35);
+      bounds.maxX = Math.max(bounds.maxX, node.targetX + 35);
+      bounds.minY = Math.min(bounds.minY, node.targetY - 35);
+      bounds.maxY = Math.max(bounds.maxY, node.targetY + 35);
+
+      getTreeBoundingBox(node.left, bounds);
+      getTreeBoundingBox(node.right, bounds);
+      return bounds;
+    }
+
+    function fitToScreen() {
+      if (!root) {
+        resetCamera();
+        return;
+      }
+
+      const bounds = getTreeBoundingBox(root);
+      const logicalWidth = canvas.width / dpr;
+      const logicalHeight = canvas.height / dpr;
+
+      const treeW = bounds.maxX - bounds.minX;
+      const treeH = bounds.maxY - bounds.minY;
+
+      if (treeW <= 0 || treeH <= 0) return;
+
+      const padding = 80;
+      const scaleX = (logicalWidth - padding * 2) / treeW;
+      const scaleY = (logicalHeight - padding * 2) / treeH;
+
+      // Fit scale within bounds
+      let optimalZoom = Math.min(scaleX, scaleY);
+      optimalZoom = Math.min(Math.max(0.25, optimalZoom), 1.2);
+
+      zoom = optimalZoom;
+
+      // Center tree in canvas viewport
+      const treeCenterX = (bounds.minX + bounds.maxX) / 2;
+      const treeCenterY = (bounds.minY + bounds.maxY) / 2;
+
+      panX = (logicalWidth / 2) - (treeCenterX * zoom);
+      panY = (logicalHeight / 2) - (treeCenterY * zoom);
     }
 
     function resetCamera() {
       zoom = 1.0;
-      panX = 0;
-      panY = 0;
-      updateLayout();
+      const logicalWidth = canvas.width / dpr;
+
+      if (root) {
+        const bounds = getTreeBoundingBox(root);
+        const treeCenterX = (bounds.minX + bounds.maxX) / 2;
+        panX = (logicalWidth / 2) - treeCenterX;
+        panY = 40;
+      } else {
+        panX = 0;
+        panY = 0;
+      }
     }
 
     /* ==========================================================================
